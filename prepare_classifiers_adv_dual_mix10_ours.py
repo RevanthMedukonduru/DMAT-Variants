@@ -219,7 +219,7 @@ class BayesWrap(nn.Module):
 
 # parse command line options
 parser = argparse.ArgumentParser(description="On-manifold adv training")
-parser.add_argument("--config", default="our_experiments/classifiers/cifar_manifold_pgd5_sgd_svgd1p.yml")
+parser.add_argument("--config", default="our_experiments/classifiers/img_manifold_pgd5_sgd_svgd1p.yml")
 parser.add_argument("--resume", default="")
 args = parser.parse_args()
 
