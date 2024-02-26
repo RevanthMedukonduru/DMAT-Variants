@@ -77,7 +77,7 @@ def set_random_seed(cfg):
 
 def load_config(config_file):
     with open(config_file) as f:
-        config = DotDict(yaml.load(f))
+        config = DotDict(yaml.load(f, Loader = yaml.FullLoader))
     if 'distributed' not in config:
         config['distributed'] = False
     return config

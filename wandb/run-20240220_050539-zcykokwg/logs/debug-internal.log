@@ -1,0 +1,251 @@
+2024-02-20 05:05:39,027 INFO    StreamThr :2708630 [internal.py:wandb_internal():86] W&B internal server running at pid: 2708630, started at: 2024-02-20 05:05:39.026521
+2024-02-20 05:05:39,030 DEBUG   HandlerThread:2708630 [handler.py:handle_request():146] handle_request: status
+2024-02-20 05:05:39,032 INFO    WriterThread:2708630 [datastore.py:open_for_write():85] open: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/run-zcykokwg.wandb
+2024-02-20 05:05:39,033 DEBUG   SenderThread:2708630 [sender.py:send():380] send: header
+2024-02-20 05:05:39,050 DEBUG   SenderThread:2708630 [sender.py:send():380] send: run
+2024-02-20 05:05:39,700 INFO    SenderThread:2708630 [dir_watcher.py:__init__():211] watching files in: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files
+2024-02-20 05:05:39,700 INFO    SenderThread:2708630 [sender.py:_start_run_threads():1124] run started: zcykokwg with start time 1708405539.026198
+2024-02-20 05:05:39,715 DEBUG   HandlerThread:2708630 [handler.py:handle_request():146] handle_request: check_version
+2024-02-20 05:05:39,716 DEBUG   SenderThread:2708630 [sender.py:send_request():407] send_request: check_version
+2024-02-20 05:05:39,833 DEBUG   HandlerThread:2708630 [handler.py:handle_request():146] handle_request: run_start
+2024-02-20 05:05:39,856 DEBUG   HandlerThread:2708630 [system_info.py:__init__():32] System info init
+2024-02-20 05:05:39,856 DEBUG   HandlerThread:2708630 [system_info.py:__init__():47] System info init done
+2024-02-20 05:05:39,856 INFO    HandlerThread:2708630 [system_monitor.py:start():194] Starting system monitor
+2024-02-20 05:05:39,857 INFO    SystemMonitor:2708630 [system_monitor.py:_start():158] Starting system asset monitoring threads
+2024-02-20 05:05:39,857 INFO    HandlerThread:2708630 [system_monitor.py:probe():214] Collecting system info
+2024-02-20 05:05:39,858 INFO    SystemMonitor:2708630 [interfaces.py:start():190] Started cpu monitoring
+2024-02-20 05:05:39,859 INFO    SystemMonitor:2708630 [interfaces.py:start():190] Started disk monitoring
+2024-02-20 05:05:39,861 INFO    SystemMonitor:2708630 [interfaces.py:start():190] Started gpu monitoring
+2024-02-20 05:05:39,862 INFO    SystemMonitor:2708630 [interfaces.py:start():190] Started memory monitoring
+2024-02-20 05:05:39,864 INFO    SystemMonitor:2708630 [interfaces.py:start():190] Started network monitoring
+2024-02-20 05:05:39,873 DEBUG   HandlerThread:2708630 [system_info.py:probe():196] Probing system
+2024-02-20 05:05:39,880 DEBUG   HandlerThread:2708630 [system_info.py:_probe_git():181] Probing git
+2024-02-20 05:05:39,898 DEBUG   HandlerThread:2708630 [system_info.py:_probe_git():189] Probing git done
+2024-02-20 05:05:39,898 DEBUG   HandlerThread:2708630 [system_info.py:probe():244] Probing system done
+2024-02-20 05:05:39,898 DEBUG   HandlerThread:2708630 [system_monitor.py:probe():223] {'os': 'Linux-5.15.0-89-generic-x86_64-with-glibc2.35', 'python': '3.9.18', 'heartbeatAt': '2024-02-20T05:05:39.873410', 'startedAt': '2024-02-20T05:05:39.018774', 'docker': None, 'cuda': None, 'args': (), 'state': 'running', 'program': '/home/revanth/DMAT-Variants/prepare_classifiers_adv_dual_mix10_ours.py', 'codePathLocal': 'prepare_classifiers_adv_dual_mix10_ours.py', 'codePath': 'prepare_classifiers_adv_dual_mix10_ours.py', 'git': {'remote': 'https://github.com/RevanthMedukonduru/DMAT-Variants.git', 'commit': '8c7fe4fd7a4763f4aaa7ffa10957d3f81ec3f1d6'}, 'email': None, 'root': '/home/revanth/DMAT-Variants', 'host': 'vm3', 'username': 'revanth', 'executable': '/opt/anaconda3/envs/pytorch/bin/python', 'cpu_count': 14, 'cpu_count_logical': 14, 'cpu_freq': {'current': 1997.6850000000002, 'min': 0.0, 'max': 0.0}, 'cpu_freq_per_core': [{'current': 1997.685, 'min': 0.0, 'max': 0.0}, {'current': 1997.685, 'min': 0.0, 'max': 0.0}, {'current': 1997.685, 'min': 0.0, 'max': 0.0}, {'current': 1997.685, 'min': 0.0, 'max': 0.0}, {'current': 1997.685, 'min': 0.0, 'max': 0.0}, {'current': 1997.685, 'min': 0.0, 'max': 0.0}, {'current': 1997.685, 'min': 0.0, 'max': 0.0}, {'current': 1997.685, 'min': 0.0, 'max': 0.0}, {'current': 1997.685, 'min': 0.0, 'max': 0.0}, {'current': 1997.685, 'min': 0.0, 'max': 0.0}, {'current': 1997.685, 'min': 0.0, 'max': 0.0}, {'current': 1997.685, 'min': 0.0, 'max': 0.0}, {'current': 1997.685, 'min': 0.0, 'max': 0.0}, {'current': 1997.685, 'min': 0.0, 'max': 0.0}], 'disk': {'/': {'total': 490.04620361328125, 'used': 52.45848846435547}}, 'gpu': 'NVIDIA RTX A6000', 'gpu_count': 1, 'gpu_devices': [{'name': 'NVIDIA RTX A6000', 'memory_total': 51527024640}], 'memory': {'total': 28.640701293945312}}
+2024-02-20 05:05:39,898 INFO    HandlerThread:2708630 [system_monitor.py:probe():224] Finished collecting system info
+2024-02-20 05:05:39,898 INFO    HandlerThread:2708630 [system_monitor.py:probe():227] Publishing system info
+2024-02-20 05:05:39,898 DEBUG   HandlerThread:2708630 [system_info.py:_save_pip():52] Saving list of pip packages installed into the current environment
+2024-02-20 05:05:39,899 DEBUG   HandlerThread:2708630 [system_info.py:_save_pip():68] Saving pip packages done
+2024-02-20 05:05:39,899 DEBUG   HandlerThread:2708630 [system_info.py:_save_conda():75] Saving list of conda packages installed into the current environment
+2024-02-20 05:05:40,703 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_created():271] file/dir created: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/requirements.txt
+2024-02-20 05:05:40,704 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_created():271] file/dir created: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/conda-environment.yaml
+2024-02-20 05:05:45,893 DEBUG   HandlerThread:2708630 [system_info.py:_save_conda():87] Saving conda packages done
+2024-02-20 05:05:45,893 DEBUG   HandlerThread:2708630 [system_info.py:_save_code():90] Saving code
+2024-02-20 05:05:45,900 DEBUG   HandlerThread:2708630 [system_info.py:_save_code():111] Saving code done
+2024-02-20 05:05:45,900 DEBUG   HandlerThread:2708630 [system_info.py:_save_patches():128] Saving git patches
+2024-02-20 05:05:45,938 DEBUG   HandlerThread:2708630 [system_info.py:_save_patches():170] Saving git patches done
+2024-02-20 05:05:45,939 INFO    HandlerThread:2708630 [system_monitor.py:probe():229] Finished publishing system info
+2024-02-20 05:05:45,942 DEBUG   HandlerThread:2708630 [handler.py:handle_request():146] handle_request: status_report
+2024-02-20 05:05:45,943 DEBUG   HandlerThread:2708630 [handler.py:handle_request():146] handle_request: keepalive
+2024-02-20 05:05:45,943 DEBUG   SenderThread:2708630 [sender.py:send():380] send: files
+2024-02-20 05:05:45,944 INFO    SenderThread:2708630 [sender.py:_save_file():1380] saving file wandb-metadata.json with policy now
+2024-02-20 05:05:45,944 INFO    SenderThread:2708630 [sender.py:_save_file():1380] saving file code/prepare_classifiers_adv_dual_mix10_ours.py with policy now
+2024-02-20 05:05:45,945 INFO    SenderThread:2708630 [sender.py:_save_file():1380] saving file diff.patch with policy now
+2024-02-20 05:05:45,952 DEBUG   SenderThread:2708630 [sender.py:send():380] send: telemetry
+2024-02-20 05:05:45,952 DEBUG   HandlerThread:2708630 [handler.py:handle_request():146] handle_request: internal_messages
+2024-02-20 05:05:45,957 DEBUG   HandlerThread:2708630 [handler.py:handle_request():146] handle_request: stop_status
+2024-02-20 05:05:45,957 DEBUG   SenderThread:2708630 [sender.py:send_request():407] send_request: stop_status
+2024-02-20 05:05:46,613 DEBUG   SenderThread:2708630 [sender.py:send():380] send: telemetry
+2024-02-20 05:05:46,657 DEBUG   SenderThread:2708630 [sender.py:send():380] send: telemetry
+2024-02-20 05:05:46,703 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/conda-environment.yaml
+2024-02-20 05:05:46,703 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_created():271] file/dir created: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/wandb-metadata.json
+2024-02-20 05:05:46,704 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_created():271] file/dir created: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/diff.patch
+2024-02-20 05:05:46,704 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_created():271] file/dir created: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/code/prepare_classifiers_adv_dual_mix10_ours.py
+2024-02-20 05:05:46,704 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_created():271] file/dir created: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/code
+2024-02-20 05:05:46,918 INFO    wandb-upload_0:2708630 [upload_job.py:push():131] Uploaded file /tmp/tmpfisb72g5wandb/fngl0tr3-wandb-metadata.json
+2024-02-20 05:05:47,099 INFO    wandb-upload_2:2708630 [upload_job.py:push():131] Uploaded file /tmp/tmpfisb72g5wandb/yu3yp15h-diff.patch
+2024-02-20 05:05:47,161 INFO    wandb-upload_1:2708630 [upload_job.py:push():131] Uploaded file /tmp/tmpfisb72g5wandb/wb70hj9h-code/prepare_classifiers_adv_dual_mix10_ours.py
+2024-02-20 05:05:47,704 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_created():271] file/dir created: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:05:48,461 DEBUG   SenderThread:2708630 [sender.py:send():380] send: telemetry
+2024-02-20 05:05:49,705 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:05:50,506 DEBUG   HandlerThread:2708630 [handler.py:handle_request():146] handle_request: status_report
+2024-02-20 05:05:50,705 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:05:51,706 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:05:53,706 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:05:55,707 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:05:55,878 DEBUG   HandlerThread:2708630 [handler.py:handle_request():146] handle_request: status_report
+2024-02-20 05:05:57,708 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:05:59,709 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:06:00,891 DEBUG   HandlerThread:2708630 [handler.py:handle_request():146] handle_request: status_report
+2024-02-20 05:06:00,951 DEBUG   HandlerThread:2708630 [handler.py:handle_request():146] handle_request: internal_messages
+2024-02-20 05:06:00,952 DEBUG   HandlerThread:2708630 [handler.py:handle_request():146] handle_request: stop_status
+2024-02-20 05:06:00,952 DEBUG   SenderThread:2708630 [sender.py:send_request():407] send_request: stop_status
+2024-02-20 05:06:01,710 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:06:03,711 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:06:05,712 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:06:06,273 DEBUG   HandlerThread:2708630 [handler.py:handle_request():146] handle_request: status_report
+2024-02-20 05:06:07,713 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:06:09,713 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:06:11,664 DEBUG   HandlerThread:2708630 [handler.py:handle_request():146] handle_request: status_report
+2024-02-20 05:06:11,714 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:06:12,715 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/config.yaml
+2024-02-20 05:06:13,715 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:06:15,716 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:06:15,950 DEBUG   HandlerThread:2708630 [handler.py:handle_request():146] handle_request: stop_status
+2024-02-20 05:06:15,950 DEBUG   SenderThread:2708630 [sender.py:send_request():407] send_request: stop_status
+2024-02-20 05:06:15,952 DEBUG   HandlerThread:2708630 [handler.py:handle_request():146] handle_request: internal_messages
+2024-02-20 05:06:17,057 DEBUG   HandlerThread:2708630 [handler.py:handle_request():146] handle_request: status_report
+2024-02-20 05:06:17,717 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:06:19,718 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:06:21,718 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:06:22,449 DEBUG   HandlerThread:2708630 [handler.py:handle_request():146] handle_request: status_report
+2024-02-20 05:06:23,719 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:06:25,720 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:06:27,721 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:06:27,867 DEBUG   HandlerThread:2708630 [handler.py:handle_request():146] handle_request: status_report
+2024-02-20 05:06:29,722 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:06:30,950 DEBUG   HandlerThread:2708630 [handler.py:handle_request():146] handle_request: stop_status
+2024-02-20 05:06:30,950 DEBUG   SenderThread:2708630 [sender.py:send_request():407] send_request: stop_status
+2024-02-20 05:06:30,953 DEBUG   HandlerThread:2708630 [handler.py:handle_request():146] handle_request: internal_messages
+2024-02-20 05:06:31,723 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:06:33,266 DEBUG   HandlerThread:2708630 [handler.py:handle_request():146] handle_request: status_report
+2024-02-20 05:06:33,725 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:06:35,726 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:06:37,727 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:06:38,672 DEBUG   HandlerThread:2708630 [handler.py:handle_request():146] handle_request: status_report
+2024-02-20 05:06:39,729 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:06:39,864 DEBUG   SystemMonitor:2708630 [system_monitor.py:_start():172] Starting system metrics aggregation loop
+2024-02-20 05:06:39,865 DEBUG   SenderThread:2708630 [sender.py:send():380] send: stats
+2024-02-20 05:06:41,730 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:06:43,731 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:06:44,066 DEBUG   HandlerThread:2708630 [handler.py:handle_request():146] handle_request: status_report
+2024-02-20 05:06:45,733 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:06:45,950 DEBUG   HandlerThread:2708630 [handler.py:handle_request():146] handle_request: stop_status
+2024-02-20 05:06:45,950 DEBUG   SenderThread:2708630 [sender.py:send_request():407] send_request: stop_status
+2024-02-20 05:06:45,953 DEBUG   HandlerThread:2708630 [handler.py:handle_request():146] handle_request: internal_messages
+2024-02-20 05:06:47,734 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:06:49,089 DEBUG   HandlerThread:2708630 [handler.py:handle_request():146] handle_request: status_report
+2024-02-20 05:06:49,735 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:06:51,736 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:06:53,736 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:06:54,169 DEBUG   HandlerThread:2708630 [handler.py:handle_request():146] handle_request: status_report
+2024-02-20 05:06:55,737 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:06:57,738 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:06:59,244 DEBUG   HandlerThread:2708630 [handler.py:handle_request():146] handle_request: status_report
+2024-02-20 05:06:59,739 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:07:00,950 DEBUG   HandlerThread:2708630 [handler.py:handle_request():146] handle_request: stop_status
+2024-02-20 05:07:00,951 DEBUG   SenderThread:2708630 [sender.py:send_request():407] send_request: stop_status
+2024-02-20 05:07:00,953 DEBUG   HandlerThread:2708630 [handler.py:handle_request():146] handle_request: internal_messages
+2024-02-20 05:07:01,740 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:07:03,741 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:07:04,309 DEBUG   HandlerThread:2708630 [handler.py:handle_request():146] handle_request: status_report
+2024-02-20 05:07:05,742 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:07:07,743 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:07:09,365 DEBUG   HandlerThread:2708630 [handler.py:handle_request():146] handle_request: status_report
+2024-02-20 05:07:09,744 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:07:09,866 DEBUG   SenderThread:2708630 [sender.py:send():380] send: stats
+2024-02-20 05:07:11,745 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:07:13,746 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:07:14,628 DEBUG   HandlerThread:2708630 [handler.py:handle_request():146] handle_request: status_report
+2024-02-20 05:07:15,747 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:07:15,950 DEBUG   HandlerThread:2708630 [handler.py:handle_request():146] handle_request: stop_status
+2024-02-20 05:07:15,951 DEBUG   SenderThread:2708630 [sender.py:send_request():407] send_request: stop_status
+2024-02-20 05:07:15,953 DEBUG   HandlerThread:2708630 [handler.py:handle_request():146] handle_request: internal_messages
+2024-02-20 05:07:17,747 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:07:19,683 DEBUG   HandlerThread:2708630 [handler.py:handle_request():146] handle_request: status_report
+2024-02-20 05:07:19,748 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:07:21,749 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:07:23,750 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:07:25,000 DEBUG   HandlerThread:2708630 [handler.py:handle_request():146] handle_request: status_report
+2024-02-20 05:07:25,737 DEBUG   SenderThread:2708630 [sender.py:send():380] send: exit
+2024-02-20 05:07:25,737 INFO    SenderThread:2708630 [sender.py:send_exit():585] handling exit code: 255
+2024-02-20 05:07:25,737 INFO    SenderThread:2708630 [sender.py:send_exit():587] handling runtime: 105
+2024-02-20 05:07:25,737 INFO    SenderThread:2708630 [sender.py:_save_file():1380] saving file wandb-summary.json with policy end
+2024-02-20 05:07:25,738 INFO    SenderThread:2708630 [sender.py:send_exit():593] send defer
+2024-02-20 05:07:25,738 DEBUG   HandlerThread:2708630 [handler.py:handle_request():146] handle_request: defer
+2024-02-20 05:07:25,738 INFO    HandlerThread:2708630 [handler.py:handle_request_defer():172] handle defer: 0
+2024-02-20 05:07:25,738 DEBUG   SenderThread:2708630 [sender.py:send_request():407] send_request: defer
+2024-02-20 05:07:25,738 INFO    SenderThread:2708630 [sender.py:send_request_defer():609] handle sender defer: 0
+2024-02-20 05:07:25,739 INFO    SenderThread:2708630 [sender.py:transition_state():613] send defer: 1
+2024-02-20 05:07:25,739 DEBUG   HandlerThread:2708630 [handler.py:handle_request():146] handle_request: defer
+2024-02-20 05:07:25,739 INFO    HandlerThread:2708630 [handler.py:handle_request_defer():172] handle defer: 1
+2024-02-20 05:07:25,739 DEBUG   SenderThread:2708630 [sender.py:send_request():407] send_request: defer
+2024-02-20 05:07:25,739 INFO    SenderThread:2708630 [sender.py:send_request_defer():609] handle sender defer: 1
+2024-02-20 05:07:25,739 INFO    SenderThread:2708630 [sender.py:transition_state():613] send defer: 2
+2024-02-20 05:07:25,739 DEBUG   HandlerThread:2708630 [handler.py:handle_request():146] handle_request: defer
+2024-02-20 05:07:25,740 INFO    HandlerThread:2708630 [handler.py:handle_request_defer():172] handle defer: 2
+2024-02-20 05:07:25,740 INFO    HandlerThread:2708630 [system_monitor.py:finish():203] Stopping system monitor
+2024-02-20 05:07:25,740 DEBUG   SystemMonitor:2708630 [system_monitor.py:_start():179] Finished system metrics aggregation loop
+2024-02-20 05:07:25,740 INFO    HandlerThread:2708630 [interfaces.py:finish():202] Joined cpu monitor
+2024-02-20 05:07:25,741 DEBUG   SystemMonitor:2708630 [system_monitor.py:_start():183] Publishing last batch of metrics
+2024-02-20 05:07:25,741 INFO    HandlerThread:2708630 [interfaces.py:finish():202] Joined disk monitor
+2024-02-20 05:07:25,751 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:07:25,752 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_created():271] file/dir created: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/wandb-summary.json
+2024-02-20 05:07:25,842 INFO    HandlerThread:2708630 [interfaces.py:finish():202] Joined gpu monitor
+2024-02-20 05:07:25,842 INFO    HandlerThread:2708630 [interfaces.py:finish():202] Joined memory monitor
+2024-02-20 05:07:25,842 INFO    HandlerThread:2708630 [interfaces.py:finish():202] Joined network monitor
+2024-02-20 05:07:25,843 DEBUG   SenderThread:2708630 [sender.py:send_request():407] send_request: defer
+2024-02-20 05:07:25,843 INFO    SenderThread:2708630 [sender.py:send_request_defer():609] handle sender defer: 2
+2024-02-20 05:07:25,843 INFO    SenderThread:2708630 [sender.py:transition_state():613] send defer: 3
+2024-02-20 05:07:25,843 DEBUG   SenderThread:2708630 [sender.py:send():380] send: stats
+2024-02-20 05:07:25,843 DEBUG   HandlerThread:2708630 [handler.py:handle_request():146] handle_request: defer
+2024-02-20 05:07:25,844 INFO    HandlerThread:2708630 [handler.py:handle_request_defer():172] handle defer: 3
+2024-02-20 05:07:25,844 DEBUG   SenderThread:2708630 [sender.py:send_request():407] send_request: defer
+2024-02-20 05:07:25,844 INFO    SenderThread:2708630 [sender.py:send_request_defer():609] handle sender defer: 3
+2024-02-20 05:07:25,844 INFO    SenderThread:2708630 [sender.py:transition_state():613] send defer: 4
+2024-02-20 05:07:25,844 DEBUG   HandlerThread:2708630 [handler.py:handle_request():146] handle_request: defer
+2024-02-20 05:07:25,844 INFO    HandlerThread:2708630 [handler.py:handle_request_defer():172] handle defer: 4
+2024-02-20 05:07:25,845 DEBUG   SenderThread:2708630 [sender.py:send_request():407] send_request: defer
+2024-02-20 05:07:25,845 INFO    SenderThread:2708630 [sender.py:send_request_defer():609] handle sender defer: 4
+2024-02-20 05:07:25,845 INFO    SenderThread:2708630 [sender.py:transition_state():613] send defer: 5
+2024-02-20 05:07:25,845 DEBUG   HandlerThread:2708630 [handler.py:handle_request():146] handle_request: defer
+2024-02-20 05:07:25,845 INFO    HandlerThread:2708630 [handler.py:handle_request_defer():172] handle defer: 5
+2024-02-20 05:07:25,845 DEBUG   SenderThread:2708630 [sender.py:send():380] send: summary
+2024-02-20 05:07:25,846 INFO    SenderThread:2708630 [sender.py:_save_file():1380] saving file wandb-summary.json with policy end
+2024-02-20 05:07:25,846 DEBUG   SenderThread:2708630 [sender.py:send_request():407] send_request: defer
+2024-02-20 05:07:25,846 INFO    SenderThread:2708630 [sender.py:send_request_defer():609] handle sender defer: 5
+2024-02-20 05:07:25,846 INFO    SenderThread:2708630 [sender.py:transition_state():613] send defer: 6
+2024-02-20 05:07:25,846 DEBUG   HandlerThread:2708630 [handler.py:handle_request():146] handle_request: defer
+2024-02-20 05:07:25,846 INFO    HandlerThread:2708630 [handler.py:handle_request_defer():172] handle defer: 6
+2024-02-20 05:07:25,847 DEBUG   SenderThread:2708630 [sender.py:send_request():407] send_request: defer
+2024-02-20 05:07:25,847 INFO    SenderThread:2708630 [sender.py:send_request_defer():609] handle sender defer: 6
+2024-02-20 05:07:25,847 INFO    SenderThread:2708630 [sender.py:transition_state():613] send defer: 7
+2024-02-20 05:07:25,847 DEBUG   HandlerThread:2708630 [handler.py:handle_request():146] handle_request: status_report
+2024-02-20 05:07:25,847 DEBUG   HandlerThread:2708630 [handler.py:handle_request():146] handle_request: defer
+2024-02-20 05:07:25,847 INFO    HandlerThread:2708630 [handler.py:handle_request_defer():172] handle defer: 7
+2024-02-20 05:07:25,848 DEBUG   SenderThread:2708630 [sender.py:send_request():407] send_request: defer
+2024-02-20 05:07:25,848 INFO    SenderThread:2708630 [sender.py:send_request_defer():609] handle sender defer: 7
+2024-02-20 05:07:26,737 DEBUG   HandlerThread:2708630 [handler.py:handle_request():146] handle_request: poll_exit
+2024-02-20 05:07:26,752 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/wandb-summary.json
+2024-02-20 05:07:27,752 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:07:28,045 INFO    SenderThread:2708630 [sender.py:transition_state():613] send defer: 8
+2024-02-20 05:07:28,045 DEBUG   SenderThread:2708630 [sender.py:send_request():407] send_request: poll_exit
+2024-02-20 05:07:28,046 DEBUG   HandlerThread:2708630 [handler.py:handle_request():146] handle_request: defer
+2024-02-20 05:07:28,046 INFO    HandlerThread:2708630 [handler.py:handle_request_defer():172] handle defer: 8
+2024-02-20 05:07:28,046 DEBUG   SenderThread:2708630 [sender.py:send_request():407] send_request: defer
+2024-02-20 05:07:28,046 INFO    SenderThread:2708630 [sender.py:send_request_defer():609] handle sender defer: 8
+2024-02-20 05:07:28,047 INFO    SenderThread:2708630 [job_builder.py:build():298] Attempting to build job artifact
+2024-02-20 05:07:28,048 INFO    SenderThread:2708630 [job_builder.py:_get_source_type():428] is repo sourced job
+2024-02-20 05:07:28,074 INFO    SenderThread:2708630 [job_builder.py:build():404] adding wandb-job metadata file
+2024-02-20 05:07:28,080 INFO    SenderThread:2708630 [sender.py:transition_state():613] send defer: 9
+2024-02-20 05:07:28,081 DEBUG   HandlerThread:2708630 [handler.py:handle_request():146] handle_request: defer
+2024-02-20 05:07:28,081 DEBUG   SenderThread:2708630 [sender.py:send():380] send: artifact
+2024-02-20 05:07:28,081 INFO    HandlerThread:2708630 [handler.py:handle_request_defer():172] handle defer: 9
+2024-02-20 05:07:28,753 INFO    Thread-12 :2708630 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:07:31,738 DEBUG   HandlerThread:2708630 [handler.py:handle_request():146] handle_request: keepalive
+2024-02-20 05:07:32,149 WARNING StreamThr :2708630 [internal.py:is_dead():414] Internal process exiting, parent pid 2708593 disappeared
+2024-02-20 05:07:32,149 ERROR   StreamThr :2708630 [internal.py:wandb_internal():152] Internal process shutdown.
+2024-02-20 05:07:32,573 INFO    SenderThread:2708630 [sender.py:send_artifact():1458] sent artifact job-https___github.com_RevanthMedukonduru_DMAT-Variants.git_prepare_classifiers_adv_dual_mix10_ours.py - {'id': 'QXJ0aWZhY3Q6NzI2NDAxMTI0', 'state': 'COMMITTED', 'artifactSequence': {'id': 'QXJ0aWZhY3RDb2xsZWN0aW9uOjE0MTMwMzkzNQ==', 'latestArtifact': {'id': 'QXJ0aWZhY3Q6NzI2NDAxMTI0', 'versionIndex': 2}}}
+2024-02-20 05:07:32,573 INFO    SenderThread:2708630 [sender.py:finish():1536] shutting down sender
+2024-02-20 05:07:32,573 INFO    SenderThread:2708630 [dir_watcher.py:finish():358] shutting down directory watcher
+2024-02-20 05:07:32,739 INFO    HandlerThread:2708630 [handler.py:finish():866] shutting down handler
+2024-02-20 05:07:32,754 INFO    SenderThread:2708630 [dir_watcher.py:finish():388] scan: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files
+2024-02-20 05:07:32,755 INFO    SenderThread:2708630 [dir_watcher.py:finish():402] scan save: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/conda-environment.yaml conda-environment.yaml
+2024-02-20 05:07:32,755 INFO    SenderThread:2708630 [dir_watcher.py:finish():402] scan save: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/wandb-summary.json wandb-summary.json
+2024-02-20 05:07:32,756 INFO    SenderThread:2708630 [dir_watcher.py:finish():402] scan save: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/config.yaml config.yaml
+2024-02-20 05:07:32,760 INFO    SenderThread:2708630 [dir_watcher.py:finish():402] scan save: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/diff.patch diff.patch
+2024-02-20 05:07:32,760 INFO    SenderThread:2708630 [dir_watcher.py:finish():402] scan save: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/requirements.txt requirements.txt
+2024-02-20 05:07:32,760 INFO    SenderThread:2708630 [dir_watcher.py:finish():402] scan save: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log output.log
+2024-02-20 05:07:32,760 INFO    SenderThread:2708630 [dir_watcher.py:finish():402] scan save: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/wandb-metadata.json wandb-metadata.json
+2024-02-20 05:07:32,772 INFO    SenderThread:2708630 [dir_watcher.py:finish():402] scan save: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/code/prepare_classifiers_adv_dual_mix10_ours.py code/prepare_classifiers_adv_dual_mix10_ours.py
+2024-02-20 05:07:32,772 INFO    SenderThread:2708630 [file_pusher.py:finish():175] shutting down file pusher
+2024-02-20 05:07:32,772 INFO    SenderThread:2708630 [file_pusher.py:join():181] waiting for file pusher
+2024-02-20 05:07:33,086 INFO    WriterThread:2708630 [datastore.py:close():294] close: /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/run-zcykokwg.wandb
+2024-02-20 05:07:33,333 INFO    wandb-upload_0:2708630 [upload_job.py:push():131] Uploaded file /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/conda-environment.yaml
+2024-02-20 05:07:33,337 INFO    wandb-upload_3:2708630 [upload_job.py:push():131] Uploaded file /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/wandb-summary.json
+2024-02-20 05:07:33,411 INFO    wandb-upload_2:2708630 [upload_job.py:push():131] Uploaded file /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/config.yaml
+2024-02-20 05:07:33,531 INFO    wandb-upload_4:2708630 [upload_job.py:push():131] Uploaded file /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/output.log
+2024-02-20 05:07:33,688 INFO    wandb-upload_1:2708630 [upload_job.py:push():131] Uploaded file /home/revanth/DMAT-Variants/wandb/run-20240220_050539-zcykokwg/files/requirements.txt
+2024-02-20 05:07:34,275 INFO    SenderThread:2708630 [file_stream.py:finish():595] file stream finish called
+2024-02-20 05:07:34,526 INFO    SenderThread:2708630 [file_stream.py:finish():599] file stream finish is done

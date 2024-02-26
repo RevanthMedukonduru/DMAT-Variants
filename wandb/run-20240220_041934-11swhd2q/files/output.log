@@ -1,0 +1,16 @@
+/opt/anaconda3/envs/pytorch/lib/python3.9/site-packages/torchvision/models/_utils.py:208: UserWarning: The parameter 'pretrained' is deprecated since 0.13 and may be removed in the future, please use 'weights' instead.
+  warnings.warn(
+/opt/anaconda3/envs/pytorch/lib/python3.9/site-packages/torchvision/models/_utils.py:223: UserWarning: Arguments other than a weight enum or `None` for 'weights' are deprecated since 0.13 and may be removed in the future. The current behavior is equivalent to passing `weights=None`.
+  warnings.warn(msg)
+num particles: 1
+Traceback (most recent call last):
+  File "/home/revanth/DMAT-Variants/prepare_classifiers_adv_dual_mix10_ours.py", line 288, in <module>
+    dataset = get_dataset(cfg)
+  File "/home/revanth/DMAT-Variants/utils/loaders.py", line 95, in get_dataset
+    module = importlib.import_module('datasets.' + cfg.dataset.name)
+  File "/opt/anaconda3/envs/pytorch/lib/python3.9/importlib/__init__.py", line 127, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1030, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1007, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 984, in _find_and_load_unlocked
+ModuleNotFoundError: No module named 'datasets.mixed10'

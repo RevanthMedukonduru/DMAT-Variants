@@ -1,0 +1,1 @@
+{"epoch": 2, "lr": 0.256, "train_overall_loss": 2.7490477561950684, "test_clean_loss": 2.6042304701698473, "test_clean_acc": 9.564696485623003, "test_adv_loss": 7.567135879406914, "test_adv_acc": 0.0, "test_ladv_loss": 50.60886718213749, "test_ladv_acc": 2.406150159744409, "_timestamp": 1708412709.5482712, "_runtime": 5593.788086175919, "_step": 2, "_wandb": {"runtime": 5969}}

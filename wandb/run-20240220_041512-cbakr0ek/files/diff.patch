@@ -1,0 +1,26 @@
+diff --git a/classifiers/imagenet_classifier.py b/classifiers/imagenet_classifier.py
+index 7d2f68b..4e8c7e1 100644
+--- a/classifiers/imagenet_classifier.py
++++ b/classifiers/imagenet_classifier.py
+@@ -3,7 +3,7 @@ from torchvision.models import resnet50
+ import os
+ import torch.nn as nn
+ import torch
+-from art.classifiers import PyTorchClassifier
++from art.estimators.classification import PyTorchClassifier
+ import numpy as np
+ from collections import OrderedDict
+ 
+diff --git a/utils/loaders.py b/utils/loaders.py
+index d630f26..f8f94ec 100644
+--- a/utils/loaders.py
++++ b/utils/loaders.py
+@@ -77,7 +77,7 @@ def set_random_seed(cfg):
+ 
+ def load_config(config_file):
+     with open(config_file) as f:
+-        config = DotDict(yaml.load(f))
++        config = DotDict(yaml.load(f, Loader = yaml.FullLoader))
+     if 'distributed' not in config:
+         config['distributed'] = False
+     return config

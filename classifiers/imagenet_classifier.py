@@ -3,7 +3,7 @@ from torchvision.models import resnet50
 import os
 import torch.nn as nn
 import torch
-from art.classifiers import PyTorchClassifier
+from art.estimators.classification import PyTorchClassifier
 import numpy as np
 from collections import OrderedDict
 

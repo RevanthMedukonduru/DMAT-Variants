@@ -1,0 +1,452 @@
+/opt/anaconda3/envs/pytorch/lib/python3.9/site-packages/torchvision/models/_utils.py:208: UserWarning: The parameter 'pretrained' is deprecated since 0.13 and may be removed in the future, please use 'weights' instead.
+  warnings.warn(
+/opt/anaconda3/envs/pytorch/lib/python3.9/site-packages/torchvision/models/_utils.py:223: UserWarning: Arguments other than a weight enum or `None` for 'weights' are deprecated since 0.13 and may be removed in the future. The current behavior is equivalent to passing `weights=None`.
+  warnings.warn(msg)
+num particles: 1
+train dataset size: 50000
+test dataset size: 10000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+TRAIN E: [0] LR: 0.400000 Img Lo: 3.135 (2.744) Adv Lo: 3.347 (2.746) LAdv Lo: 3.081 (2.764) Ovall Loss: 3.214 (2.755) : 100%|██████████████████████████████████████| 1563/1563 [12:05<00:00,  2.15it/s]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Test Epoch: [0] Clean Loss: 3.037 (3.165) Clean Acc: 0.000 (0.000) Adv Loss: 7.892 (8.305) Adv Acc: 0.000 (0.000) LAdv Loss: 58.732 (65.495) LAdv Acc: 0.000 (0.000) :  11%|██▎                  | 35/313 [02:16<18:06,  3.91s/it]
+Traceback (most recent call last):
+  File "/home/revanth/DMAT-Variants/prepare_classifiers_adv_dual_mix10_ours.py", line 586, in <module>
+    test_clean_loss, test_clean_acc, test_adv_loss, test_adv_acc, test_ladv_loss, test_ladv_acc = test(epoch)
+  File "/home/revanth/DMAT-Variants/prepare_classifiers_adv_dual_mix10_ours.py", line 520, in test
+    latents_adv = test_latent_attacker.perturb(latents, labels)
+  File "/opt/anaconda3/envs/pytorch/lib/python3.9/site-packages/advertorch/attacks/iterative_projected_gradient.py", line 183, in perturb
+    rval = perturb_iterative(
+  File "/opt/anaconda3/envs/pytorch/lib/python3.9/site-packages/advertorch/attacks/iterative_projected_gradient.py", line 65, in perturb_iterative
+    outputs = predict(xvar + delta)
+  File "/opt/anaconda3/envs/pytorch/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/opt/anaconda3/envs/pytorch/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1527, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/opt/anaconda3/envs/pytorch/lib/python3.9/site-packages/torch/nn/modules/container.py", line 215, in forward
+    input = module(input)
+  File "/opt/anaconda3/envs/pytorch/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/opt/anaconda3/envs/pytorch/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1527, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/opt/anaconda3/envs/pytorch/lib/python3.9/site-packages/torch/nn/parallel/data_parallel.py", line 183, in forward
+    return self.module(*inputs[0], **module_kwargs[0])
+  File "/opt/anaconda3/envs/pytorch/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/opt/anaconda3/envs/pytorch/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1527, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/revanth/DMAT-Variants/stylegan_old/stylegan_generator_model.py", line 414, in forward
+    x = self.__getattr__(f'layer{layer_idx}')(x, w[:, layer_idx])
+  File "/opt/anaconda3/envs/pytorch/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/opt/anaconda3/envs/pytorch/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1527, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/revanth/DMAT-Variants/stylegan_old/stylegan_generator_model.py", line 759, in forward
+    x = self.epilogue(x, w)
+  File "/opt/anaconda3/envs/pytorch/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/opt/anaconda3/envs/pytorch/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1527, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/revanth/DMAT-Variants/stylegan_old/stylegan_generator_model.py", line 589, in forward
+    x = self.norm(x)
+  File "/opt/anaconda3/envs/pytorch/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/opt/anaconda3/envs/pytorch/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1527, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/revanth/DMAT-Variants/stylegan_old/stylegan_generator_model.py", line 448, in forward
+    x = x - torch.mean(x, dim=[2, 3], keepdim=True)
+KeyboardInterrupt

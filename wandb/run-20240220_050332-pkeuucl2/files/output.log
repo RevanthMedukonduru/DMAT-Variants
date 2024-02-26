@@ -1,0 +1,340 @@
+/opt/anaconda3/envs/pytorch/lib/python3.9/site-packages/torchvision/models/_utils.py:208: UserWarning: The parameter 'pretrained' is deprecated since 0.13 and may be removed in the future, please use 'weights' instead.
+  warnings.warn(
+/opt/anaconda3/envs/pytorch/lib/python3.9/site-packages/torchvision/models/_utils.py:223: UserWarning: Arguments other than a weight enum or `None` for 'weights' are deprecated since 0.13 and may be removed in the future. The current behavior is equivalent to passing `weights=None`.
+  warnings.warn(msg)
+num particles: 1
+train dataset size: 50000
+test dataset size: 10000
+Images Shape:  torch.Size([32, 3, 32, 32]) Latents Shape:  torch.Size([32, 8, 512]) Labels Shape:  torch.Size([32])
+  0%|                                                                         | 0/1563 [00:00<?, ?it/s]
+lod: 0
+Channels: [512, 512, 512, 512, 512, 256, 128, 64] len:  8
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 0
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 2
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 4
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 6
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 8
+lod: 0
+Channels: [512, 512, 512, 512, 512, 256, 128, 64] len:  8
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 0
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 2
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 4
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 6
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 8
+lod: 0
+Channels: [512, 512, 512, 512, 512, 256, 128, 64] len:  8
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 0
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 2
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 4
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 6
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 8
+lod: 0
+Channels: [512, 512, 512, 512, 512, 256, 128, 64] len:  8
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 0
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 2
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 4
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 6
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 8
+lod: 0
+Channels: [512, 512, 512, 512, 512, 256, 128, 64] len:  8
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 0
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 2
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 4
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 6
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 8
+lod: 0
+Channels: [512, 512, 512, 512, 512, 256, 128, 64] len:  8
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 0
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 2
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 4
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 6
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 8
+
+TRAIN E: [0] LR: 0.000768Img Lo: 2.572 (2.604) Adv Lo: 2.704 (2.526) LAdv Lo: 2.657 (2.619) Ovall Loss:
+lod: 0
+Channels: [512, 512, 512, 512, 512, 256, 128, 64] len:  8
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 0
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 2
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 4
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 6
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 8
+lod: 0
+Channels: [512, 512, 512, 512, 512, 256, 128, 64] len:  8
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 0
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 2
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 4
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 6
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 8
+lod: 0
+Channels: [512, 512, 512, 512, 512, 256, 128, 64] len:  8
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 0
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 2
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 4
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 6
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 8
+lod: 0
+Channels: [512, 512, 512, 512, 512, 256, 128, 64] len:  8
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 0
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 2
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 4
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 6
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 8
+lod: 0
+Channels: [512, 512, 512, 512, 512, 256, 128, 64] len:  8
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 0
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 2
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 4
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 6
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 8
+lod: 0
+Channels: [512, 512, 512, 512, 512, 256, 128, 64] len:  8
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 0
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 2
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 4
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 6
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 8
+Images Shape:  torch.Size([32, 3, 32, 32]) Latents Shape:  torch.Size([32, 8, 512]) Labels Shape:  torch.Size([32])
+lod: 0
+Channels: [512, 512, 512, 512, 512, 256, 128, 64] len:  8
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 0
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 2
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 4
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 6
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 8
+lod: 0
+Channels: [512, 512, 512, 512, 512, 256, 128, 64] len:  8
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 0
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 2
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 4
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 6
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 8
+lod: 0
+Channels: [512, 512, 512, 512, 512, 256, 128, 64] len:  8
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 0
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 2
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 4
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 6
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 8
+lod: 0
+Channels: [512, 512, 512, 512, 512, 256, 128, 64] len:  8
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 0
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 2
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 4
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 6
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 8
+lod: 0
+Channels: [512, 512, 512, 512, 512, 256, 128, 64] len:  8
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 0
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 2
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 4
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 6
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 8
+lod: 0
+Channels: [512, 512, 512, 512, 512, 256, 128, 64] len:  8
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 0
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 2
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 4
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 6
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 8
+Images Shape:  torch.Size([32, 3, 32, 32]) Latents Shape:  torch.Size([32, 8, 512]) Labels Shape:  torch.Size([32])
+lod: 0
+Channels: [512, 512, 512, 512, 512, 256, 128, 64] len:  8
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 0
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 2
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 4
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 6
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 8
+lod: 0
+Channels: [512, 512, 512, 512, 512, 256, 128, 64] len:  8
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 0
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 2
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 4
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 6
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 8
+lod: 0
+Channels: [512, 512, 512, 512, 512, 256, 128, 64] len:  8
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 0
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 2
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 4
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 6
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 8
+lod: 0
+Channels: [512, 512, 512, 512, 512, 256, 128, 64] len:  8
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 0
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 2
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 4
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 6
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 8
+lod: 0
+Channels: [512, 512, 512, 512, 512, 256, 128, 64] len:  8
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 0
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 2
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 4
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 6
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 8
+lod: 0
+Channels: [512, 512, 512, 512, 512, 256, 128, 64] len:  8
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 0
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 2
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 4
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 6
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 8
+Images Shape:  torch.Size([32, 3, 32, 32]) Latents Shape:  torch.Size([32, 8, 512]) Labels Shape:  torch.Size([32])
+lod: 0
+Channels: [512, 512, 512, 512, 512, 256, 128, 64] len:  8
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 0
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 2
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 4
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 6
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 8
+lod: 0
+Channels: [512, 512, 512, 512, 512, 256, 128, 64] len:  8
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 0
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 2
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 4
+w tensor shape: torch.Size([32, 8, 512])
+Attempting to access layer index: 6
+w tensor shape: torch.Size([32, 8, 512])
+TRAIN E: [0] LR: 0.001024Img Lo: 2.489 (2.575) Adv Lo: 2.573 (2.538) LAdv Lo: 2.904 (2.690) Ovall Loss:
+Traceback (most recent call last):
+  File "/home/revanth/DMAT-Variants/prepare_classifiers_adv_dual_mix10_ours.py", line 580, in <module>
+    train_overall_loss = train(epoch)
+  File "/home/revanth/DMAT-Variants/prepare_classifiers_adv_dual_mix10_ours.py", line 448, in train
+    latents_adv = latent_attacker.perturb(latents, labels)
+  File "/opt/anaconda3/envs/pytorch/lib/python3.9/site-packages/advertorch/attacks/iterative_projected_gradient.py", line 183, in perturb
+    rval = perturb_iterative(
+  File "/opt/anaconda3/envs/pytorch/lib/python3.9/site-packages/advertorch/attacks/iterative_projected_gradient.py", line 70, in perturb_iterative
+    loss.backward()
+  File "/opt/anaconda3/envs/pytorch/lib/python3.9/site-packages/torch/_tensor.py", line 492, in backward
+    torch.autograd.backward(
+  File "/opt/anaconda3/envs/pytorch/lib/python3.9/site-packages/torch/autograd/__init__.py", line 251, in backward
+    Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+KeyboardInterrupt

@@ -1,0 +1,74 @@
+/opt/anaconda3/envs/pytorch/lib/python3.9/site-packages/torchvision/models/_utils.py:208: UserWarning: The parameter 'pretrained' is deprecated since 0.13 and may be removed in the future, please use 'weights' instead.
+  warnings.warn(
+/opt/anaconda3/envs/pytorch/lib/python3.9/site-packages/torchvision/models/_utils.py:223: UserWarning: Arguments other than a weight enum or `None` for 'weights' are deprecated since 0.13 and may be removed in the future. The current behavior is equivalent to passing `weights=None`.
+  warnings.warn(msg)
+num particles: 1
+train dataset size: 50000
+test dataset size: 10000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+TRAIN E: [0] LR: 0.052174 Img Lo: 2.676 (2.730) Adv Lo: 2.675 (2.743) LAdv Lo: 2.804 (2.761) Ovall Loss: 2.739 (2.752) :  13%|▊     | 51/391 [00:49<05:33,  1.02it/s]
+Traceback (most recent call last):
+  File "/home/revanth/DMAT-Variants/prepare_classifiers_adv_dual_mix10_ours.py", line 579, in <module>
+    train_overall_loss = train(epoch)
+  File "/home/revanth/DMAT-Variants/prepare_classifiers_adv_dual_mix10_ours.py", line 446, in train
+    images_adv = image_attacker.perturb(images, labels)
+  File "/opt/anaconda3/envs/pytorch/lib/python3.9/site-packages/advertorch/attacks/iterative_projected_gradient.py", line 183, in perturb
+    rval = perturb_iterative(
+  File "/opt/anaconda3/envs/pytorch/lib/python3.9/site-packages/advertorch/attacks/iterative_projected_gradient.py", line 65, in perturb_iterative
+    outputs = predict(xvar + delta)
+  File "/opt/anaconda3/envs/pytorch/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/opt/anaconda3/envs/pytorch/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1527, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/revanth/DMAT-Variants/prepare_classifiers_adv_dual_mix10_ours.py", line 129, in forward
+    l = particle(x)
+  File "/opt/anaconda3/envs/pytorch/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/opt/anaconda3/envs/pytorch/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1527, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/opt/anaconda3/envs/pytorch/lib/python3.9/site-packages/torchvision/models/resnet.py", line 285, in forward
+    return self._forward_impl(x)
+  File "/opt/anaconda3/envs/pytorch/lib/python3.9/site-packages/torchvision/models/resnet.py", line 275, in _forward_impl
+    x = self.layer3(x)
+  File "/opt/anaconda3/envs/pytorch/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/opt/anaconda3/envs/pytorch/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1527, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/opt/anaconda3/envs/pytorch/lib/python3.9/site-packages/torch/nn/modules/container.py", line 215, in forward
+    input = module(input)
+  File "/opt/anaconda3/envs/pytorch/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/opt/anaconda3/envs/pytorch/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1527, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/opt/anaconda3/envs/pytorch/lib/python3.9/site-packages/torchvision/models/resnet.py", line 146, in forward
+    out = self.conv1(x)
+  File "/opt/anaconda3/envs/pytorch/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1518, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/opt/anaconda3/envs/pytorch/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1527, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/opt/anaconda3/envs/pytorch/lib/python3.9/site-packages/torch/nn/modules/conv.py", line 460, in forward
+    return self._conv_forward(input, self.weight, self.bias)
+  File "/opt/anaconda3/envs/pytorch/lib/python3.9/site-packages/torch/nn/modules/conv.py", line 456, in _conv_forward
+    return F.conv2d(input, weight, bias, self.stride,
+KeyboardInterrupt
