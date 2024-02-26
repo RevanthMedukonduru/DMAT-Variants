@@ -10,7 +10,7 @@ optimizer:
   args:
     lr: 0.1
     momentum: 0.9
-    weight_decay: 0.0001
+    weight_decay: 0.0005
 
 scheduler:
   type: cyclic
@@ -23,9 +23,6 @@ svgd:
 
 IS_ENSnP_or_SVGD1P_TRAINING: True
 IS_IG_TRAINING: False
-
-gpu:
-  id: 0
 
 image_attack:
   module: advertorch.attacks
@@ -51,11 +48,11 @@ dataset:
   name: mixed10
   num_classes: 10
   train:
-    path: /home/revanth/on-off-manifold/stylegan2Ada_IS/dataset
-    batch_size: 32
+    path: /data/Dual-Manifold-Adversarial-Training/stylegan_old/dataset
+    batch_size: 64
   test:
-    path: /home/revanth/on-off-manifold/stylegan2Ada_IS/dataset
-    batch_size: 32
+    path: /data/Dual-Manifold-Adversarial-Training/stylegan_old/dataset
+    batch_size: 64
 
 whatsnew:
   default: "Config is based on Previous Clean acc."

@@ -48,10 +48,10 @@ dataset:
   name: mixed10
   num_classes: 10
   train:
-    path: /home/revanth/on-off-manifold/stylegan2Ada_IS/dataset
+    path: /data/Dual-Manifold-Adversarial-Training/stylegan_old/dataset
     batch_size: 64
   test:
-    path: /home/revanth/on-off-manifold/stylegan2Ada_IS/dataset
+    path: /data/Dual-Manifold-Adversarial-Training/stylegan_old/dataset
     batch_size: 64
 
 whatsnew:
