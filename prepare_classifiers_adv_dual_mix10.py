@@ -18,6 +18,7 @@ from advertorch.attacks import PGDAttack
 from advertorch.context import ctx_noparamgrad_and_eval
 import torchvision
 from torchvision.utils import save_image
+import wandb 
 
 # parse command line options
 parser = argparse.ArgumentParser(description="On-manifold adv training")
@@ -29,6 +30,9 @@ cfg = load_config(args.config)
 trainset_cfg = cfg.dataset.train
 testset_cfg = cfg.dataset.test
 print(cfg)
+
+# wandb.init(project="ATTACKS_RS50_DMAT_TEST", config=cfg)
+# logging.info(cfg)
 
 output_dir = cfg.classifier.path
 os.makedirs(output_dir, exist_ok=True)
@@ -89,6 +93,12 @@ test_attacker = PGDAttack(predict=net,
                           nb_iter=50,
                           clip_min=-1.0,
                           clip_max=1.0)
+
+test_latent_attacker = PGDAttack(predict=model,
+                                 eps=cfg.latent_attack.args.eps,
+                                 eps_iter=cfg.latent_attack.args.eps_iter,
+                                 nb_iter=50, 
+                                 clip_max=None, clip_min=None)
 
 # set dataset, dataloader
 dataset = get_dataset(cfg)
@@ -169,10 +179,13 @@ def train(epoch):
             inputs_path = os.path.join(vis_dir, f'{epoch}_iter_{batch_idx}_inputs.png')
             adv_image_path = os.path.join(vis_dir, f'{epoch}_iter_{batch_idx}_adv_image.png')
             adv_latent_path = os.path.join(vis_dir, f'{epoch}_iter_{batch_idx}_adv_latent.png')
-            save_image(images[:8], inputs_path, nrow=8, padding=2, normalize=True, range=(-1., 1.))
-            save_image(images_adv[:8], adv_image_path, nrow=8, padding=2, normalize=True, range=(-1., 1.))
-            save_image(images_ladv[:8], adv_latent_path, nrow=8, padding=2, normalize=True, range=(-1., 1.))
+            save_image(images[:8], inputs_path, nrow=8, padding=2, normalize=True, value_range=(0., 1.))
+            save_image(images_adv[:8], adv_image_path, nrow=8, padding=2, normalize=True, value_range=(0., 1.))
+            save_image(images_ladv[:8], adv_latent_path, nrow=8, padding=2, normalize=True, value_range=(0., 1.))
 
+    return image_loss_meter.avg, latent_loss_meter.avg, total_loss_meter.avg
+
+"""
 def test(epoch):
     progress_bar = tqdm(testloader)
     net.eval()
@@ -197,16 +210,108 @@ def test(epoch):
             'Adv Acc: {acc_adv.val:.3f} ({acc_adv.avg:.3f}) '.format(epoch, acc_clean=acc_clean, acc_adv=acc_adv))
 
     logging.info(f'Epoch: {epoch} | Clean: {acc_clean.avg:.2f} % | Adv: {acc_adv.avg:.2f} %')
+"""
+
+
+def test(epoch, mode="Test"):
+    progress_bar = tqdm(testloader)
+    net.eval()
+    gan.eval()
+
+    # Clean Image
+    loss_clean_meter = AverageMeter()
+    acc_clean_meter = AverageMeter()
+    
+    # Adversarial Image - Image attack
+    loss_adv_meter = AverageMeter()
+    acc_adv_meter = AverageMeter()
+    
+    # Latent Vector based Adversarial Image - Latent attack
+    loss_ladv_meter = AverageMeter()
+    acc_ladv_meter = AverageMeter()
+
+    for batch_idx, (images, latents, labels) in enumerate(progress_bar):
+        images, latents, labels = images.cuda(), latents.cuda(), labels.cuda()
+        
+        with ctx_noparamgrad_and_eval(model):
+            images_adv = test_attacker.perturb(images, labels)
+            latents_adv = test_latent_attacker.perturb(latents, labels)
+            images_ladv = gan(latents_adv).detach()
+            
+            # here we need to preprocess the perturbed latent Vector based Adversarial Images as well before passing to the classifier
+            # images_ladv = transform.classifier_preprocess_layer(images_ladv) # input -> Clamps to [-1, 1], scales to [0, 1] -> returned
+            
+            # normalise the images, images_adv, images_ladv
+            # images = transforms.Normalize(CIFAR10_MEAN, CIFAR10_STD)(images)
+            # images_adv = transforms.Normalize(CIFAR10_MEAN, CIFAR10_STD)(images_adv)
+            # images_ladv = transforms.Normalize(CIFAR10_MEAN, CIFAR10_STD)(images_ladv)
+            
+            # Forward pass
+            logits_clean = net(images)
+            logits_adv = net(images_adv)
+            logits_ladv = net(images_ladv)
+            
+            # Calculate loss
+            loss_clean = criterion(logits_clean, labels)
+            loss_adv = criterion(logits_adv, labels)
+            loss_ladv = criterion(logits_ladv, labels)
+            
+            # Calculate Predictions
+            pred_clean = logits_clean.argmax(dim=1)
+            pred_adv = logits_adv.argmax(dim=1)
+            pred_ladv = logits_ladv.argmax(dim=1)
+            
+            # Calculate accuracy
+            acc_clean = (pred_clean == labels).float().mean().item() * 100.0
+            acc_adv = (pred_adv == labels).float().mean().item() * 100.0
+            acc_ladv = (pred_ladv == labels).float().mean().item() * 100.0
+            
+        acc_clean_meter.update(acc_clean)
+        acc_adv_meter.update(acc_adv)
+        acc_ladv_meter.update(acc_ladv)
+        
+        loss_clean_meter.update(loss_clean.item())
+        loss_adv_meter.update(loss_adv.item())
+        loss_ladv_meter.update(loss_ladv.item())
+        
+        progress_bar.set_description(
+            'Ep: [{epoch}] '
+            'Cl Lo: ({loss_clean.avg:.3f}) '
+            'Cl Ac:  ({acc_clean.avg:.3f}) '
+            'Ad Lo: ({loss_adv.avg:.3f}) '
+            'Ad Ac: ({acc_adv.avg:.3f}) '
+            'LA Lo: ({loss_ladv.avg:.3f}) '
+            'LA Ac: ({acc_ladv.avg:.3f}) '.format(epoch=epoch, loss_clean=loss_clean_meter, acc_clean=acc_clean_meter, loss_adv=loss_adv_meter, acc_adv=acc_adv_meter, loss_ladv=loss_ladv_meter, acc_ladv=acc_ladv_meter))
+
+    return loss_clean_meter.avg, acc_clean_meter.avg, loss_adv_meter.avg, acc_adv_meter.avg, loss_ladv_meter.avg, acc_ladv_meter.avg
 
 
 for epoch in range(start_epoch, cfg.num_epochs):
     if cfg.distributed:
         train_sampler.set_epoch(epoch)
-    train(epoch)
+    
+    # train
+    train_image_loss, train_latent_loss, train_overall_loss = train(epoch)
+    
+    # test
+    test_clean_loss, test_clean_acc, test_adv_loss, test_adv_acc, test_ladv_loss, test_ladv_acc = test(epoch)
+    
+    lr = optimizer.param_groups[0]['lr']
 
-    if (epoch + 1) % 2 == 0:
-        test(epoch)
-
+    # wandb.log({
+    #     "epoch": epoch,
+    #     "lr": lr,
+    #     "train_adv_loss": train_image_loss,
+    #     "train_ladv_loss": train_latent_loss,
+    #     "train_overall_loss": train_overall_loss,
+    #     "test_clean_loss": test_clean_loss,
+    #     "test_clean_acc": test_clean_acc,
+    #     "test_adv_loss": test_adv_loss,
+    #     "test_adv_acc": test_adv_acc,
+    #     "test_ladv_loss": test_ladv_loss,
+    #     "test_ladv_acc": test_ladv_acc
+    # })
+    
     checkpoint_path = os.path.join(output_dir, f'classifier-{epoch:03d}.pt')
     torch.save({
         'epoch': epoch + 1,

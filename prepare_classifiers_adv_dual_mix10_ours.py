@@ -121,6 +121,21 @@ class BayesWrap(nn.Module):
         
         return total_loss, final_img_losses, final_img_losses_adv, final_img_losses_ladv
     
+    def do_FP_BP_for_one_Particle(self, particle_idx, image, image_adv, image_ladv, labels, criterion):
+        particle = self.particles[particle_idx]
+        l = particle(image)
+        l_adv = particle(image_adv)
+        l_ladv = particle(image_ladv)
+        
+        loss = criterion(l, labels)
+        loss_adv = criterion(l_adv, labels)
+        loss_ladv = criterion(l_ladv, labels)
+        
+        total_loss = (0.5 * loss_adv) + (0.5 * loss_ladv)
+        
+        total_loss.backward()
+        return total_loss, loss, loss_adv, loss_ladv
+    
     def forward(self, x, **kwargs):
         logits, entropies, soft_out, stds = [], [], [], []
         return_entropy = "return_entropy" in kwargs and kwargs["return_entropy"]
@@ -140,7 +155,7 @@ class BayesWrap(nn.Module):
             entropies = torch.stack(entropies).mean(0)
             return logits, entropies, soft_out, stds
         return logits
-
+    
     def update_grads(self):
         print("Updating grads by: ", (1.0-float(cfg.ig_params.p_update)))
         if np.random.rand() < (1.0-float(cfg.ig_params.p_update)):
@@ -187,6 +202,20 @@ class BayesWrap(nn.Module):
             for l, p in enumerate(all_pgs[i].parameters()):
                 if p.grad is not None:
                     p.grad.data = new_parameters[i][l]
+    
+    
+    def freeze_backbone(self, exclude=[], include=[]):
+        if include and len(include) > 0:
+            for name, param in self.named_parameters():
+                # if keyword in include is available in name, freeze it
+                if any([e in name for e in include]):
+                    param.requires_grad = False
+        else:
+            for particle in self.particles:    
+                for name, param in particle.named_parameters():
+                    # any string in name is there, then dont freeze it
+                    if not any([e in name for e in exclude]):
+                        param.requires_grad = False
 
 # parse command line options
 parser = argparse.ArgumentParser(description="On-manifold adv training")
@@ -241,13 +270,6 @@ if args.resume:
     net.load_state_dict(ckpt['state_dict'])
     optimizer.load_state_dict(ckpt['optimizer'])
     start_epoch = ckpt['epoch']
-
-if cfg.pretrained.allowed:
-    print("=> loading pretrained model '{}'".format(cfg.pretrained.path))
-    ckpt = torch.load(cfg.pretrained.path, map_location=lambda storage, loc: storage)
-    ckpt['state_dict'] = {k.replace("0.", "", 1): v for k, v in ckpt['state_dict'].items()}
-    net.load_state_dict(ckpt['state_dict'])
-    net = net.to(device)  
 
 net = BayesWrap(net)
 net = net.to(device)
@@ -320,10 +342,12 @@ def train_IG(epoch):
     image_adv_loss_meter = AverageMeter()
     image_ladv_loss_meter = AverageMeter()
     ce_loss_meter = AverageMeter()
-    overall_loss_meter = AverageMeter()
+    
     infogain_meter_adv = AverageMeter()
     infogain_meter_ladv = AverageMeter()
     total_infogain_meter = AverageMeter()
+    
+    overall_loss_meter = AverageMeter()
 
     for batch_idx, (images, latents, labels) in enumerate(progress_bar):
         images, latents, labels = images.to(device), latents.to(device), labels.to(device)
@@ -351,7 +375,7 @@ def train_IG(epoch):
         optimizer.zero_grad()
         
         # The entropies we will recieve from get_losses func is (Ind entropies stacked, then meaned over particles)
-        total_loss, img_loss, img_loss_adv, img_loss_ladv, logits, logits_adv, logits_ladv, entropies, entropies_adv, entropies_ladv = net.get_losses(images, images_adv, images_ladv, labels, criterion)
+        total_loss, img_loss, img_loss_adv, img_loss_ladv, logits, logits_adv, logits_ladv, entropies, entropies_adv, entropies_ladv = net.get_IG_Losses(images, images_adv, images_ladv, labels, criterion)
         
         # Calculate InfoGain
         img_prob = torch.softmax(logits, 1)
@@ -460,8 +484,26 @@ def train(epoch):
         
         # FP, BP
         optimizer.zero_grad()
+        
+        """
+        # Removed Old logic of SVGD, updated with Optimal SVGD computation - Memory Efficient
         total_loss, img_loss, img_loss_adv, img_loss_ladv = net.get_losses(images, images_adv, images_ladv, labels, criterion)
         total_loss.backward()
+        """
+        
+        # Optimal Computation of FP, BP for SVGD (Memory Efficient) (Instead of doing BP over averaged logits of particles, we do FP, BP for each particle and then update grads)
+        total_losses, losses, losses_adv, losses_ladv = [], [], [], []
+        for particle_id in range(int(cfg.svgd.num_particles)):
+            total_loss_per_par, img_loss_per_par, img_loss_adv_per_par, img_loss_ladv_per_par = net.do_FP_BP_for_one_Particle(particle_id, images, images_adv, images_ladv, labels, criterion)
+            losses.append(img_loss_per_par)
+            losses_adv.append(img_loss_adv_per_par)
+            losses_ladv.append(img_loss_ladv_per_par)
+            total_losses.append(total_loss_per_par)
+        total_loss = torch.stack(total_losses).mean(0)
+        img_loss = torch.stack(losses).mean(0)
+        img_loss_adv = torch.stack(losses_adv).mean(0)
+        img_loss_ladv = torch.stack(losses_ladv).mean(0)
+            
         if not IS_ENSnP_or_SVGD1P_TRAINING:
             net.update_grads() # PUSHING SVGD PARTICLES if its not ensembling and not just 1 particle.
         optimizer.step()
@@ -485,13 +527,16 @@ def train(epoch):
             'Img Lo: {image_loss.val:.3f} ({image_loss.avg:.3f}) '
             'Adv Lo: {image_loss_adv.val:.3f} ({image_loss_adv.avg:.3f}) '
             'LAdv Lo: {image_loss_ladv.val:.3f} ({image_loss_ladv.avg:.3f}) '
-            'Ovall Loss: {overall_loss.val:.3f} ({overall_loss.avg:.3f}) '.format(
+            'Ovl Lo: {overall_loss.val:.3f} ({overall_loss.avg:.3f}) '.format(
                 epoch=epoch,
                 lr = lr,
                 image_loss=image_loss_meter,
                 image_loss_adv=image_adv_loss_meter,
                 image_loss_ladv=image_ladv_loss_meter,
                 overall_loss=overall_loss_meter))
+        
+        # release cache memory
+        torch.cuda.empty_cache()
         
     return overall_loss_meter.avg
 
@@ -557,14 +602,13 @@ def test(epoch, mode="Test"):
         loss_ladv_meter.update(loss_ladv.item())
         
         progress_bar.set_description(
-            '{mode} '
-            'Epoch: [{epoch}] '
-            'Clean Loss: {loss_clean.val:.3f} ({loss_clean.avg:.3f}) '
-            'Clean Acc: {acc_clean.val:.3f} ({acc_clean.avg:.3f}) '
-            'Adv Loss: {loss_adv.val:.3f} ({loss_adv.avg:.3f}) '
-            'Adv Acc: {acc_adv.val:.3f} ({acc_adv.avg:.3f}) '
-            'LAdv Loss: {loss_ladv.val:.3f} ({loss_ladv.avg:.3f}) '
-            'LAdv Acc: {acc_ladv.val:.3f} ({acc_ladv.avg:.3f}) '.format(mode=mode, epoch=epoch, loss_clean=loss_clean_meter, acc_clean=acc_clean_meter, loss_adv=loss_adv_meter, acc_adv=acc_adv_meter, loss_ladv=loss_ladv_meter, acc_ladv=acc_ladv_meter))
+            'Ep: [{epoch}] '
+            'Cl Lo: ({loss_clean.avg:.3f}) '
+            'Cl Ac:  ({acc_clean.avg:.3f}) '
+            'Ad Lo: ({loss_adv.avg:.3f}) '
+            'Ad Ac: ({acc_adv.avg:.3f}) '
+            'LA Lo: ({loss_ladv.avg:.3f}) '
+            'LA Ac: ({acc_ladv.avg:.3f}) '.format(epoch=epoch, loss_clean=loss_clean_meter, acc_clean=acc_clean_meter, loss_adv=loss_adv_meter, acc_adv=acc_adv_meter, loss_ladv=loss_ladv_meter, acc_ladv=acc_ladv_meter))
 
     return loss_clean_meter.avg, acc_clean_meter.avg, loss_adv_meter.avg, acc_adv_meter.avg, loss_ladv_meter.avg, acc_ladv_meter.avg
 
