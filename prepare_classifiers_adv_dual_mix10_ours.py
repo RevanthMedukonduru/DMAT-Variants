@@ -22,6 +22,7 @@ import torch.nn as nn
 import copy
 import dnnlib, legacy
 import wandb
+from bigmodelvis import Visualization
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -255,8 +256,13 @@ cudnn.benchmark = True
 net = get_classifier(cfg, cfg.classifier)
 net = net.to(device)
 
+net = BayesWrap(net)
+net = net.to(device)
+Visualization(net).structure_graph()
+
 # set optimizers
-optimizer = load_optimizer(cfg.optimizer, params=net.parameters())
+print("PARAMS:", len(list(net.parameters())))
+optimizer = load_optimizer(cfg.optimizer, params=[p for p in net.parameters() if p.requires_grad])
 
 if cfg.scheduler.type == 'cyclic':
     lr_schedule = lambda t: np.interp([t], cfg.scheduler.args.lr_epochs, cfg.scheduler.args.lr_values)[0]
@@ -270,9 +276,6 @@ if args.resume:
     net.load_state_dict(ckpt['state_dict'])
     optimizer.load_state_dict(ckpt['optimizer'])
     start_epoch = ckpt['epoch']
-
-net = BayesWrap(net)
-net = net.to(device)
     
 criterion = torch.nn.CrossEntropyLoss().to(device)
 
@@ -473,14 +476,6 @@ def train(epoch):
             latents_adv = latent_attacker.perturb(latents, labels)
 
         images_ladv = gan(latents_adv).detach()
-        
-        # Do I need to clamp values which are not in the range of -1 to 1?
-        # images_ladv = transform.classifier_preprocess_layer(images_ladv) #FIXME1
-
-        # Do I need to normalise? #FIXME2
-        # images = transforms.Normalize(CIFAR10_MEAN, CIFAR10_STD)(images)
-        # images_adv = transforms.Normalize(CIFAR10_MEAN, CIFAR10_STD)(images_adv)
-        # images_ladv = transforms.Normalize(CIFAR10_MEAN, CIFAR10_STD)(images_ladv)
         
         # FP, BP
         optimizer.zero_grad()
