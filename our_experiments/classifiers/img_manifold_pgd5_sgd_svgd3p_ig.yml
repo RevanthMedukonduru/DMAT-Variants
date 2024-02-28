@@ -49,6 +49,8 @@ ig_params:
   ig_combination_ratio:
     lambda1: 10
     previous_lambdas: "[]"
+
+svgd_params:
   alpha: 0.001
   p_update: 0.05
 

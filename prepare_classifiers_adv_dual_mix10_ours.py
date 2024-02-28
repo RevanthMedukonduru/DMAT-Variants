@@ -158,14 +158,14 @@ class BayesWrap(nn.Module):
         return logits
     
     def update_grads(self):
-        print("Updating grads by: ", (1.0-float(cfg.ig_params.p_update)))
-        if np.random.rand() < (1.0-float(cfg.ig_params.p_update)):
+        print("Updating grads by: ", (1.0-float(cfg.svgd_params.p_update)))
+        if np.random.rand() < (1.0-float(cfg.svgd_params.p_update)):
             return
         all_pgs = self.particles
         if self.h_kernel <= 0:
             self.h_kernel = 0.1  # 1
         dists = []
-        alpha = float(cfg.ig_params.alpha)
+        alpha = float(cfg.svgd_params.alpha)
         new_parameters = [None] * len(all_pgs)
 
         for i in range(len(all_pgs)):
@@ -220,7 +220,7 @@ class BayesWrap(nn.Module):
 
 # parse command line options
 parser = argparse.ArgumentParser(description="On-manifold adv training")
-parser.add_argument("--config", default="our_experiments/classifiers/img_manifold_pgd5_sgd_svgd1p.yml")
+parser.add_argument("--config", default="our_experiments/classifiers/img_manifold_pgd5_sgd_svgd3p.yml")
 parser.add_argument("--resume", default="")
 args = parser.parse_args()
 

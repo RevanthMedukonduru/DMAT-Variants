@@ -2,7 +2,7 @@ num_epochs: 20
 
 classifier:
   name: imagenet_classifier
-  path: runs/classifiers/mixed10_pgd5_50_sgd_svgd3p
+  path: projectCheckpoints/DMAT/runs/classifiers/mixed10_pgd5_50_sgd_svgd3p
 
 optimizer:
   module: torch.optim
@@ -48,13 +48,18 @@ dataset:
   name: mixed10
   num_classes: 10
   train:
-    path: /data/Dual-Manifold-Adversarial-Training/stylegan_old/dataset
+    path: /data/stylegan_old/dataset/imagenet
     batch_size: 64
   test:
-    path: /data/Dual-Manifold-Adversarial-Training/stylegan_old/dataset
+    path: /data/stylegan_old/dataset/imagenet
     batch_size: 64
+
+svgd_params:
+  alpha: 0.001
+  p_update: 0.05
 
 whatsnew:
   default: "Config is based on Previous Clean acc."
   content: 
-    "1": "SVGD-1 PGD-5 attack."
+    "1": "SVGD-1P PGD-5, 50 ON-OFF attack."
+    "2": "SVGD-3P PGD-5, 50 ON-OFF attack."
