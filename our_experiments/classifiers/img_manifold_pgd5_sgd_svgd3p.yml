@@ -2,7 +2,7 @@ num_epochs: 20
 
 classifier:
   name: imagenet_classifier
-  path: projectCheckpoints/DMAT/runs/classifiers/mixed10_pgd5_50_sgd_svgd3p
+  path: runs/classifiers/mixed10_pgd5_50_sgd_svgd3p
 
 optimizer:
   module: torch.optim
@@ -49,10 +49,10 @@ dataset:
   num_classes: 10
   train:
     path: /data/stylegan_old/dataset/imagenet
-    batch_size: 64
+    batch_size: 32
   test:
     path: /data/stylegan_old/dataset/imagenet
-    batch_size: 64
+    batch_size: 32
 
 svgd_params:
   alpha: 0.001

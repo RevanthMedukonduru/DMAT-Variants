@@ -23,6 +23,7 @@ import copy
 import dnnlib, legacy
 import wandb
 from bigmodelvis import Visualization
+from koila import lazy
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -124,7 +125,8 @@ class BayesWrap(nn.Module):
     
     def do_FP_BP_for_one_Particle(self, particle_idx, image, image_adv, image_ladv, labels, criterion):
         particle = self.particles[particle_idx]
-        l = particle(image)
+        with torch.no_grad():
+            l = particle(image)
         l_adv = particle(image_adv)
         l_ladv = particle(image_ladv)
         
@@ -135,6 +137,7 @@ class BayesWrap(nn.Module):
         total_loss = (0.5 * loss_adv) + (0.5 * loss_ladv)
         
         total_loss.backward()
+        torch.cuda.empty_cache()
         return total_loss, loss, loss_adv, loss_ladv
     
     def forward(self, x, **kwargs):
@@ -158,7 +161,7 @@ class BayesWrap(nn.Module):
         return logits
     
     def update_grads(self):
-        print("Updating grads by: ", (1.0-float(cfg.svgd_params.p_update)))
+        # print("Updating grads by: ", (1.0-float(cfg.svgd_params.p_update)))
         if np.random.rand() < (1.0-float(cfg.svgd_params.p_update)):
             return
         all_pgs = self.particles
@@ -255,13 +258,14 @@ cudnn.benchmark = True
 # set classifier
 net = get_classifier(cfg, cfg.classifier)
 net = net.to(device)
+print(f"INITIAL TEST: ", len(list(net.parameters())))
 
 net = BayesWrap(net)
 net = net.to(device)
-Visualization(net).structure_graph()
+# Visualization(net).structure_graph()
+print(f"INITIAL TEST 2: ", len(list(net.parameters())))
 
 # set optimizers
-print("PARAMS:", len(list(net.parameters())))
 optimizer = load_optimizer(cfg.optimizer, params=[p for p in net.parameters() if p.requires_grad])
 
 if cfg.scheduler.type == 'cyclic':
@@ -470,12 +474,17 @@ def train(epoch):
             lr = lr_schedule(epoch + (batch_idx + 1) / len(trainloader))
             for param_group in optimizer.param_groups:
                 param_group['lr'] = lr
-
-        with ctx_noparamgrad_and_eval(model):
+        
+        with ctx_noparamgrad_and_eval(net):
             images_adv = image_attacker.perturb(images, labels)
+        
+        with ctx_noparamgrad_and_eval(model):
             latents_adv = latent_attacker.perturb(latents, labels)
-
-        images_ladv = gan(latents_adv).detach()
+        
+        with ctx_noparamgrad_and_eval(gan):
+            images_ladv = gan(latents_adv).detach()
+        
+        torch.cuda.empty_cache()
         
         # FP, BP
         optimizer.zero_grad()
@@ -486,7 +495,6 @@ def train(epoch):
         total_loss.backward()
         """
         
-        # Optimal Computation of FP, BP for SVGD (Memory Efficient) (Instead of doing BP over averaged logits of particles, we do FP, BP for each particle and then update grads)
         total_losses, losses, losses_adv, losses_ladv = [], [], [], []
         for particle_id in range(int(cfg.svgd.num_particles)):
             total_loss_per_par, img_loss_per_par, img_loss_adv_per_par, img_loss_ladv_per_par = net.do_FP_BP_for_one_Particle(particle_id, images, images_adv, images_ladv, labels, criterion)
@@ -498,7 +506,7 @@ def train(epoch):
         img_loss = torch.stack(losses).mean(0)
         img_loss_adv = torch.stack(losses_adv).mean(0)
         img_loss_ladv = torch.stack(losses_ladv).mean(0)
-            
+        
         if not IS_ENSnP_or_SVGD1P_TRAINING:
             net.update_grads() # PUSHING SVGD PARTICLES if its not ensembling and not just 1 particle.
         optimizer.step()
@@ -530,7 +538,6 @@ def train(epoch):
                 image_loss_ladv=image_ladv_loss_meter,
                 overall_loss=overall_loss_meter))
         
-        # release cache memory
         torch.cuda.empty_cache()
         
     return overall_loss_meter.avg
@@ -554,11 +561,15 @@ def test(epoch, mode="Test"):
 
     for batch_idx, (images, latents, labels) in enumerate(progress_bar):
         images, latents, labels = images.to(device), latents.to(device), labels.to(device)
-        
+            
         with ctx_noparamgrad_and_eval(model):
-            images_adv = test_attacker.perturb(images, labels)
-            latents_adv = test_latent_attacker.perturb(latents, labels)
+            latents_adv = test_latent_attacker.perturb(latents, labels)       
+        
+        with ctx_noparamgrad_and_eval(gan):
             images_ladv = gan(latents_adv).detach()
+        
+        with ctx_noparamgrad_and_eval(net):
+            images_adv = test_attacker.perturb(images, labels)    
             
             # here we need to preprocess the perturbed latent Vector based Adversarial Images as well before passing to the classifier
             # images_ladv = transform.classifier_preprocess_layer(images_ladv) # input -> Clamps to [-1, 1], scales to [0, 1] -> returned
@@ -568,25 +579,25 @@ def test(epoch, mode="Test"):
             # images_adv = transforms.Normalize(CIFAR10_MEAN, CIFAR10_STD)(images_adv)
             # images_ladv = transforms.Normalize(CIFAR10_MEAN, CIFAR10_STD)(images_ladv)
             
-            # Forward pass
-            logits_clean = net(images)
-            logits_adv = net(images_adv)
-            logits_ladv = net(images_ladv)
-            
-            # Calculate loss
-            loss_clean = criterion(logits_clean, labels)
-            loss_adv = criterion(logits_adv, labels)
-            loss_ladv = criterion(logits_ladv, labels)
-            
-            # Calculate Predictions
-            pred_clean = logits_clean.argmax(dim=1)
-            pred_adv = logits_adv.argmax(dim=1)
-            pred_ladv = logits_ladv.argmax(dim=1)
-            
-            # Calculate accuracy
-            acc_clean = (pred_clean == labels).float().mean().item() * 100.0
-            acc_adv = (pred_adv == labels).float().mean().item() * 100.0
-            acc_ladv = (pred_ladv == labels).float().mean().item() * 100.0
+        # Forward pass
+        logits_clean = net(images)
+        logits_adv = net(images_adv)
+        logits_ladv = net(images_ladv)
+        
+        # Calculate loss
+        loss_clean = criterion(logits_clean, labels)
+        loss_adv = criterion(logits_adv, labels)
+        loss_ladv = criterion(logits_ladv, labels)
+        
+        # Calculate Predictions
+        pred_clean = logits_clean.argmax(dim=1)
+        pred_adv = logits_adv.argmax(dim=1)
+        pred_ladv = logits_ladv.argmax(dim=1)
+        
+        # Calculate accuracy
+        acc_clean = (pred_clean == labels).float().mean().item() * 100.0
+        acc_adv = (pred_adv == labels).float().mean().item() * 100.0
+        acc_ladv = (pred_ladv == labels).float().mean().item() * 100.0
             
         acc_clean_meter.update(acc_clean)
         acc_adv_meter.update(acc_adv)
@@ -595,7 +606,7 @@ def test(epoch, mode="Test"):
         loss_clean_meter.update(loss_clean.item())
         loss_adv_meter.update(loss_adv.item())
         loss_ladv_meter.update(loss_ladv.item())
-        
+    
         progress_bar.set_description(
             'Ep: [{epoch}] '
             'Cl Lo: ({loss_clean.avg:.3f}) '

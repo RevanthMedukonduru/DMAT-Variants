@@ -391,6 +391,10 @@ class SynthesisModule(nn.Module):
   #   return image
   
   def forward(self, w):
+    # print("ENTERED IMAGE SYNTHESIS FWD")
+    # print(f"MEMORY RESERVED: {torch.cuda.memory_reserved() / 1e9:.2f} Gb")
+    # print(f"MEMORY ALLOCATED: {torch.cuda.memory_allocated() / 1e9:.2f} Gb")
+    # print(f"MEMORY CACHE ALLOCATED: {torch.cuda.memory_cached() / 1e9:.2f} Gb")
     # Assuming lod is a single value, not a list, and represents the level of detail to offset the layer processing
     lod = int(self.lod.cpu().item())
     # print("lod:", lod)
@@ -419,6 +423,10 @@ class SynthesisModule(nn.Module):
                 break  # Exit loop if layer index is out of bounds
         else:
             image = self.upsample(image)
+    # print("EXITTING IMAGE SYNTHESIS FWD")
+    # print(f"MEMORY RESERVED: {torch.cuda.memory_reserved() / 1e9:.2f} Gb")
+    # print(f"MEMORY ALLOCATED: {torch.cuda.memory_allocated() / 1e9:.2f} Gb")
+    # print(f"MEMORY CACHE ALLOCATED: {torch.cuda.memory_cached() / 1e9:.2f} Gb")
     return image
 
 
