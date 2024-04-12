@@ -54,53 +54,74 @@ class BayesWrap(nn.Module):
     def get_particle(self, index):
         return self.particles[index]
 
-    def get_losses_clean(self, x, labels, criterion, test_mode: bool = False, **kwargs):
-        logits, entropies, soft_out, stds, losses = [], [], [], [], []
-        return_entropy = "return_entropy" in kwargs and kwargs["return_entropy"]
+    def get_losses_adv(self, image_c, image_a, labels, criterion, test_mode: bool = False, **kwargs):
+        child_clean_logits, child_clean_entropies, child_clean_soft_out, child_clean_losses = [], [], [], []
+        child_adv_logits, child_adv_entropies, child_adv_soft_out, child_adv_losses = [], [], [], []
+        
         if test_mode:
             is_ig = False
         else:
             is_ig = cfg.svgd.is_ig
-        x, labels = x.to(device), labels.to(device)
+        
+        image_c, image_a, labels = image_c.to(device), image_a.to(device), labels.to(device)
         for particle in self.particles:
-            l = particle(x)
+            logits_c = particle(image_c)
+            logits_a = particle(image_a)
             
-            loss = criterion(l, labels)
-            sft = torch.softmax(l, 1)
+            loss_c = criterion(logits_c, labels)
+            loss_a = criterion(logits_a, labels)
             
-            logits.append(l)
-            losses.append(loss)
-            soft_out.append(sft)
+            sft_c = torch.softmax(logits_c, 1)
+            sft_a = torch.softmax(logits_a, 1)
             
-            if return_entropy:
-                l = torch.softmax(l, 1)
-                entropies.append((-l * torch.log(l + 1e-8)).sum(1))
+            child_clean_logits.append(logits_c)
+            child_clean_losses.append(loss_c)
+            child_clean_soft_out.append(sft_c)
             
-            if is_ig:
-                prob = torch.softmax(l, 1)
-                entropies.append((-prob * torch.log(prob + 1e-8)).sum(1))
+            child_adv_logits.append(logits_a)
+            child_adv_losses.append(loss_a)
+            child_adv_soft_out.append(sft_a)
                 
-        logits = torch.stack(logits).mean(0)
-        ce_loss = torch.stack(losses).mean(0)
-        stds = torch.stack(soft_out).std(0)
-        soft_out = torch.stack(soft_out).mean(0)
+            if is_ig:
+                prob_c = torch.softmax(logits_c, 1)
+                prob_a = torch.softmax(logits_a, 1)
+                
+                child_clean_entropies.append((-prob_c * torch.log(prob_c + 1e-8)).sum(1))
+                child_adv_entropies.append((-prob_a * torch.log(prob_a + 1e-8)).sum(1))
+            
+        child_clean_logits = torch.stack(child_clean_logits).mean(0)
+        child_clean_ce_loss = torch.stack(child_clean_losses).mean(0)
+        child_clean_soft_out = torch.stack(child_clean_soft_out).mean(0)
         
-        if return_entropy:
-            entropies = torch.stack(entropies).mean(0)
-            return logits, entropies, soft_out, stds
+        child_adv_logits = torch.stack(child_adv_logits).mean(0)
+        child_adv_ce_loss = torch.stack(child_adv_losses).mean(0)
+        child_adv_soft_out = torch.stack(child_adv_soft_out).mean(0)
         
+
         if is_ig:
-            child_entropies = torch.stack(entropies).mean(0)
-            parent_prob = torch.softmax(logits, 1)
-            parent_entropy = (-parent_prob * torch.log(parent_prob + 1e-8)).sum(1)
-            ig_loss = torch.abs(parent_entropy - child_entropies).mean(0)
+            child_clean_entropies = torch.stack(child_clean_entropies).mean(0)
+            child_adv_entropies = torch.stack(child_adv_entropies).mean(0)
+            
+            parent_prob_clean = torch.softmax(child_clean_logits, 1)
+            parent_prob_adv = torch.softmax(child_adv_logits, 1)
+            
+            parent_entropy_clean = (-parent_prob_clean * torch.log(parent_prob_clean + 1e-8)).sum(1)
+            parent_entropy_adv = (-parent_prob_adv * torch.log(parent_prob_adv + 1e-8)).sum(1)
+            
+            ig_loss_clean = parent_entropy_clean - child_clean_entropies
+            ig_loss_adv = parent_entropy_adv - child_adv_entropies
+            
+            final_ig_loss_adv = torch.abs(ig_loss_clean - ig_loss_adv).mean(0)
             
             ig_lambda = cfg.svgd.ig_lambda
-            overall_loss = ce_loss + ig_lambda * ig_loss
-            wandb.log({"CE Loss": ce_loss, "IG Loss": ig_loss, "Ratio": (ce_loss/ig_loss), "Total Loss": overall_loss})
-            return logits, ce_loss, ig_loss, overall_loss, soft_out
+            ce_loss = child_adv_ce_loss  # (0.5 * child_clean_ce_loss + 0.5 * child_adv_ce_loss) - our idea, but DMAT paper used only ADV_CE loss for AT.
+            overall_loss = ce_loss + (ig_lambda * final_ig_loss_adv)
             
-        return logits, ce_loss, soft_out
+            wandb.log({"CE Loss": ce_loss, "IG Loss": final_ig_loss_adv, "Ratio": (ce_loss/final_ig_loss_adv), "Total Loss": overall_loss})
+            return child_clean_ce_loss, child_adv_ce_loss, final_ig_loss_adv, overall_loss, child_clean_soft_out, child_adv_soft_out
+            
+        return child_clean_ce_loss, child_adv_ce_loss, child_clean_soft_out, child_adv_soft_out
+    
 
     def forward(self, x, **kwargs):
         logits, entropies, soft_out, stds = [], [], [], []
@@ -211,7 +232,7 @@ testset_cfg = cfg.dataset.test
 print(cfg)
 
 # Setup for Wandb
-wandb.init(project="CLEAN_CLASSIFIERS_MIX10_R50", config=cfg)
+wandb.init(project="ADV_CLASSIFIERS_MIX10_R50", config=cfg)
 logging.info(cfg)
 
 output_dir = cfg.classifier.path
@@ -232,12 +253,9 @@ cudnn.benchmark = True
 # set classifier
 net = get_classifier(cfg, cfg.classifier)
 net = net.to(device)
-# print(f"INITIAL TEST: ", len(list(net.parameters())))
 
 net = BayesWrap(net)
 net = net.to(device)
-# Visualization(net).structure_graph()
-# print(f"INITIAL TEST 2: ", len(list(net.parameters())))
 
 # set optimizers
 optimizer = load_optimizer(cfg.optimizer, params=[p for p in net.parameters() if p.requires_grad])
@@ -248,27 +266,45 @@ else:
     lr_schedule = None
 
 start_epoch = 0
-best_train_ce_loss, best_train_acc, best_test_loss, best_test_acc = 0.0, 0.0, 0.0, 0.0
+best_train_clean_acc, best_train_clean_loss, best_train_adv_acc, best_train_adv_loss = 0.0, 0.0, 0.0, 0.0
+best_test_clean_acc, best_test_clean_loss, best_test_adv_acc, best_test_adv_loss = 0.0, 0.0, 0.0, 0.0
+best_train_clean_epoch, best_train_adv_epoch = 0, 0
+best_test_clean_epoch, best_test_adv_epoch = 0, 0
 if args.resume:
-    print("=> loading checkpoint '{}'".format(args.resume))
+    print("=> loading checkpoint resuming '{}'".format(args.resume))
     ckpt = torch.load(args.resume)
     net.load_state_dict(ckpt['state_dict'])
     optimizer.load_state_dict(ckpt['optimizer'])
     start_epoch = ckpt['epoch']+1
-    best_train_ce_loss = ckpt['best_train_ce_loss']
-    best_train_acc = ckpt['best_train_acc']
-    best_test_loss = ckpt['best_test_loss']
-    best_test_acc = ckpt['best_test_acc']
+    best_train_clean_acc = ckpt['best_train_clean_acc']
+    best_train_clean_loss = ckpt['best_train_clean_loss']
+    best_train_adv_acc = ckpt['best_train_adv_acc']
+    best_train_adv_loss = ckpt['best_train_adv_loss']
+    best_train_clean_epoch = ckpt['best_train_clean_epoch']
+    best_train_adv_epoch = ckpt['best_train_adv_epoch']
+    best_test_clean_acc = ckpt['best_test_clean_acc']
+    best_test_clean_loss = ckpt['best_test_clean_loss']
+    best_test_adv_acc = ckpt['best_test_adv_acc']
+    best_test_adv_loss = ckpt['best_test_adv_loss']
+    best_test_clean_epoch = ckpt['best_test_clean_epoch']
+    best_test_adv_epoch = ckpt['best_test_adv_epoch']
     
 criterion = torch.nn.CrossEntropyLoss().to(device)
+
+# off-manifold attacks/AT
+image_attacker = get_attack(cfg.image_attack, net)
+test_attacker = PGDAttack(predict=net,
+                          eps=cfg.image_attack.args.eps,
+                          eps_iter=cfg.image_attack.args.eps_iter,
+                          nb_iter=50,
+                          clip_min=-1.0,
+                          clip_max=1.0)
 
 # set dataset, dataloader
 dataset = get_dataset(cfg)
 transform = get_transform(cfg)
 trainset = dataset(root=trainset_cfg.path, train=True)
 testset = dataset(root=testset_cfg.path, train=False) 
-# Natural image
-# testset = test_dataset(root=testset_cfg.path, train=False)
 
 train_sampler = None
 test_sampler = None
@@ -287,14 +323,18 @@ testloader = DataLoader(testset,
                         shuffle=False,
                         sampler=test_sampler)
 
-def train(epoch):
+def train_adv(epoch):
     
     progress_bar = tqdm(trainloader)
 
     net.train()
 
-    ce_loss_meter = AverageMeter()
-    acc_meter = AverageMeter()
+    clean_ce_loss_meter = AverageMeter()
+    adv_ce_loss_meter = AverageMeter()
+    
+    clean_acc_meter = AverageMeter()
+    adv_acc_meter = AverageMeter()
+    
     is_ig = cfg.svgd.is_ig
     if is_ig:
         ig_loss_meter = AverageMeter()
@@ -309,10 +349,14 @@ def train(epoch):
             for param_group in optimizer.param_groups:
                 param_group['lr'] = lr
         
+        with ctx_noparamgrad_and_eval(net):
+            images_adv = image_attacker.perturb(images, labels)
+    
         if is_ig:
-            _, ce_loss, ig_loss, overall_loss, soft_out = net.get_losses_clean(images, labels, criterion)
+            clean_ce_loss, adv_ce_loss, ig_loss, overall_loss, clean_soft_out, adv_soft_out = net.get_losses_adv(images, images_adv, labels, criterion)
         else:    
-            _, overall_loss, soft_out = net.get_losses_clean(images, labels, criterion)
+            clean_ce_loss, adv_ce_loss, clean_soft_out, adv_soft_out = net.get_losses_adv(images, images_adv, labels, criterion)
+            overall_loss = adv_ce_loss
         
         # FP, BP
         optimizer.zero_grad()
@@ -320,47 +364,66 @@ def train(epoch):
         if ((cfg.issvgd) and (epoch < cfg.svgd.particle_push_limit_epochs)):
             net.update_grads(epoch)
         optimizer.step()
-
-        preds = soft_out.argmax(dim=1)
-        acc_value = (preds == labels).float().mean().item() * 100.0    
+        
+        preds_clean = clean_soft_out.argmax(dim=1)
+        acc_clean = (preds_clean == labels).float().mean().item() * 100.0
+        preds_adv = adv_soft_out.argmax(dim=1)
+        acc_adv = (preds_adv == labels).float().mean().item() * 100.0
+        
+        clean_ce_loss_meter.update(clean_ce_loss.item())
+        adv_ce_loss_meter.update(adv_ce_loss.item())
+        clean_acc_meter.update(acc_clean)
+        adv_acc_meter.update(acc_adv)
         
         if is_ig:
-            ce_loss_meter.update(ce_loss.item())
-            acc_meter.update(acc_value)
             ig_loss_meter.update(ig_loss.item())
-            overall_loss_meter.update(overall_loss.item())
-            progress_bar.set_description(f"E: [{epoch}] Train CE Loss: {ce_loss_meter.avg:.4f}, IG Loss: {ig_loss_meter.avg:.4f}, Ov Loss: {overall_loss_meter.avg:.4f}, Acc: {acc_meter.avg:.3f}")
+            overall_loss_meter.update(overall_loss.item())            
+            progress_bar.set_description(f"E: [{epoch}] Train CE Loss: {clean_ce_loss_meter.avg:.4f}, Adv CE Loss: {adv_ce_loss_meter.avg:.4f}, IG Loss: {ig_loss_meter.avg:.4f}, Ov Loss: {overall_loss_meter.avg:.4f}, Clean Acc: {clean_acc_meter.avg:.3f}, Adv Acc: {adv_acc_meter.avg:.3f}")
         else:
-            ce_loss_meter.update(overall_loss.item())
-            acc_meter.update(acc_value)
-            progress_bar.set_description(f"E: [{epoch}] Train Loss: {ce_loss_meter.avg:.4f}, Acc: {acc_meter.avg:.3f}")
+            progress_bar.set_description(f"E: [{epoch}] Train CE Loss: {clean_ce_loss_meter.avg:.4f}, Adv CE Loss: {adv_ce_loss_meter.avg:.4f}, Clean Acc: {clean_acc_meter.avg:.3f}, Adv Acc: {adv_acc_meter.avg:.3f}")
         
     if is_ig:
-        return ce_loss_meter.avg, ig_loss_meter.avg, overall_loss_meter.avg, acc_meter.avg
+        return clean_ce_loss_meter.avg, adv_ce_loss_meter.avg, ig_loss_meter.avg, overall_loss_meter.avg, clean_acc_meter.avg, adv_acc_meter.avg
     else:
-        return ce_loss_meter.avg, acc_meter.avg
+        return clean_ce_loss_meter.avg, adv_ce_loss_meter.avg, clean_acc_meter.avg, adv_acc_meter.avg
     
 
-def test(epoch):
+def test_adv(epoch):
+    
+    progress_bar = tqdm(testloader)
     net.eval()
 
-    acc_meter = AverageMeter()
-    loss_meter = AverageMeter()
-    progress_bar = tqdm(testloader)
+    # Clean Image
+    loss_clean_meter = AverageMeter()
+    acc_clean_meter = AverageMeter()
+    
+    # Adversarial Image - Image attack
+    loss_adv_meter = AverageMeter()
+    acc_adv_meter = AverageMeter()
+    
     
     for batch_idx, (images, _, labels) in enumerate(progress_bar):
         images, labels = images.to(device), labels.to(device)
         
-        logits, loss, soft_out = net.get_losses_clean(images, labels, criterion, test_mode=True)
-        preds = soft_out.argmax(dim=1)
+        with ctx_noparamgrad_and_eval(net):
+            images_adv = test_attacker.perturb(images, labels)
         
-        acc_value = (preds == labels).float().mean().item() * 100.0
-        loss_meter.update(loss.item())
-        acc_meter.update(acc_value)
+        clean_ce_loss, adv_ce_loss, clean_soft_out, adv_soft_out = net.get_losses_adv(images, images_adv, labels, criterion, test_mode=True)
         
-        progress_bar.set_description(f"E: [{epoch}] Test Loss: {loss_meter.avg:.4f}, Acc: {acc_meter.avg:.3f}")
+        preds_clean = clean_soft_out.argmax(dim=1)
+        acc_clean = (preds_clean == labels).float().mean().item() * 100.0
+        preds_adv = adv_soft_out.argmax(dim=1)
+        acc_adv = (preds_adv == labels).float().mean().item() * 100.0
         
-    return loss_meter.avg, acc_meter.avg
+        loss_clean_meter.update(clean_ce_loss.item())
+        acc_clean_meter.update(acc_clean)
+        loss_adv_meter.update(adv_ce_loss.item())
+        acc_adv_meter.update(acc_adv)
+        
+        progress_bar.set_description(f"E: [{epoch}] Test Clean Loss: {loss_clean_meter.avg:.4f}, C.Acc: {acc_clean_meter.avg:.3f}, Adv Loss: {loss_adv_meter.avg:.4f}, A.Acc: {acc_adv_meter.avg:.3f}")
+        
+    return loss_clean_meter.avg, acc_clean_meter.avg, loss_adv_meter.avg, acc_adv_meter.avg
+
 
 # ----------------------- TESTING WITH ADV - ROBUSTNESS ATTACKS -----------------------
 # ADV attackers
@@ -453,12 +516,12 @@ for epoch in range(start_epoch, cfg.num_epochs):
     
     # Train
     if cfg.svgd.is_ig:
-        epoch_train_ce_loss, epoch_train_ig_loss, epoch_train_overall_loss, epoch_train_acc = train(epoch)
+        epoch_train_clean_ce_loss, epoch_train_adv_ce_loss, epoch_train_ig_loss, epoch_train_overall_loss, epoch_train_clean_acc, epoch_train_adv_acc = train_adv(epoch)
     else:       
-        epoch_train_ce_loss, epoch_train_acc = train(epoch)
+        epoch_train_clean_ce_loss, epoch_train_adv_ce_loss, epoch_train_clean_acc, epoch_train_adv_acc = train_adv(epoch)
     
     # Test
-    epoch_test_loss, epoch_test_acc = test(epoch)
+    epoch_test_clean_loss, epoch_test_clean_acc, epoch_test_adv_loss, epoch_test_adv_acc = test_adv(epoch)
     
     # Robustness Test
     if cfg.robustness_test:
@@ -471,75 +534,121 @@ for epoch in range(start_epoch, cfg.num_epochs):
     if (cfg.num_particles>1):
         calc_L2Dis_between_particles(epoch)
     
+    
     # Log it to logging file
     if cfg.svgd.is_ig:
-        logging.info(f"Epoch: {epoch} | LR: {lr} | Train CE Loss: {epoch_train_ce_loss} | IG Loss: {epoch_train_ig_loss} | Overall Loss: {epoch_train_overall_loss} | Acc: {epoch_train_acc} | Test Loss: {epoch_test_loss} | Acc: {epoch_test_acc}")
+        logging.info(f"Epoch: {epoch} | LR: {lr} | Train CE Loss: {epoch_train_clean_ce_loss} | Adv Loss: {epoch_train_adv_ce_loss} | IG Loss: {epoch_train_ig_loss} | Ov Loss: {epoch_train_overall_loss} | Clean Acc: {epoch_train_clean_acc} | Adv Acc: {epoch_train_adv_acc} | Test Clean Loss: {epoch_test_clean_loss} | Adv Loss: {epoch_test_adv_loss} | Clean Acc: {epoch_test_clean_acc} | Adv Acc: {epoch_test_adv_acc}")
 
         # Log to wandb
         wandb.log({
             "epoch": epoch,
             "lr": lr,
-            "train_ce_loss": epoch_train_ce_loss,
+            "train_clean_ce_loss": epoch_train_clean_ce_loss,
+            "train_adv_ce_loss": epoch_train_adv_ce_loss,
             "train_ig_loss": epoch_train_ig_loss,
             "train_overall_loss": epoch_train_overall_loss,
-            "train_acc": epoch_train_acc,
-            "test_loss": epoch_test_loss,
-            "test_acc": epoch_test_acc
+            "train_clean_acc": epoch_train_clean_acc,
+            "train_adv_acc": epoch_train_adv_acc,
+            "test_clean_loss": epoch_test_clean_loss,
+            "test_adv_loss": epoch_test_adv_loss,
+            "test_clean_acc": epoch_test_clean_acc,
+            "test_adv_acc": epoch_test_adv_acc
         })
     else:
-        logging.info(f"Epoch: {epoch} | LR: {lr} | Train Loss: {epoch_train_ce_loss} | Train Acc: {epoch_train_acc} | Test Loss: {epoch_test_loss} | Test Acc: {epoch_test_acc}")
-            
+        logging.info(f"Epoch: {epoch} | LR: {lr} | Train CE Loss: {epoch_train_clean_ce_loss} | Adv Loss: {epoch_train_adv_ce_loss} | Clean Acc: {epoch_train_clean_acc} | Adv Acc: {epoch_train_adv_acc} | Test Clean Loss: {epoch_test_clean_loss} | Adv Loss: {epoch_test_adv_loss} | Clean Acc: {epoch_test_clean_acc} | Adv Acc: {epoch_test_adv_acc}")
+                    
         # Log to wandb
         wandb.log({
             "epoch": epoch,
             "lr": lr,
-            "train_ce_loss": epoch_train_ce_loss,
-            "train_acc": epoch_train_acc,
-            "test_loss": epoch_test_loss,
-            "test_acc": epoch_test_acc
+            "train_clean_ce_loss": epoch_train_clean_ce_loss,
+            "train_adv_ce_loss": epoch_train_adv_ce_loss,
+            "train_clean_acc": epoch_train_clean_acc,
+            "train_adv_acc": epoch_train_adv_acc,
+            "test_clean_loss": epoch_test_clean_loss,
+            "test_adv_loss": epoch_test_adv_loss,
+            "test_clean_acc": epoch_test_clean_acc,
+            "test_adv_acc": epoch_test_adv_acc
         })
-        
     
-    if epoch_train_acc > best_train_acc:
-        best_train_acc = epoch_train_acc
-        best_train_ce_loss = epoch_train_ce_loss
-          
-    # Always replace and save the model with best test accuracy
-    if epoch_test_acc > best_test_acc:
-        best_test_acc = epoch_test_acc
-        best_test_loss = epoch_test_loss
+    if epoch_train_clean_acc > best_train_clean_acc:
+        best_train_clean_acc = epoch_train_clean_acc
+        best_train_clean_loss = epoch_train_clean_ce_loss
+        best_train_clean_epoch = epoch
+    
+    if epoch_train_adv_acc > best_train_adv_acc:
+        best_train_adv_acc = epoch_train_adv_acc
+        best_train_adv_loss = epoch_train_adv_ce_loss
+        best_train_adv_epoch = epoch
         
-        # Save the model with cifar_{}_best_model.pth, where {} is cfg.optimizer.name
+    if epoch_test_clean_acc > best_test_clean_acc:
+        best_test_clean_acc = epoch_test_clean_acc
+        best_test_clean_loss = epoch_test_clean_loss
+        best_test_clean_epoch = epoch
+        
+        checkpoint_path = os.path.join(output_dir, f'best_clean_classifier.pt')
         torch.save({
             'epoch': epoch,
             'state_dict': net.state_dict(),
             'optimizer': optimizer.state_dict(),
-            'best_test_acc': best_test_acc,
-            'best_train_ce_loss': best_train_ce_loss,
-            'best_train_acc': best_train_acc,
-            'best_test_loss': best_test_loss
-        }, os.path.join(output_dir, f'mix10_{cfg.optimizer.name}_best_model.pth'))
+            'best_test_clean_acc': best_test_clean_acc,
+            'best_test_clean_loss': best_test_clean_loss,
+            'best_test_clean_epoch': best_test_clean_epoch
+        }, checkpoint_path)
         
-    # Save the trained model
+    if epoch_test_adv_acc > best_test_adv_acc:
+        best_test_adv_acc = epoch_test_adv_acc
+        best_test_adv_loss = epoch_test_adv_loss
+        best_test_adv_epoch = epoch
+        
+        checkpoint_path = os.path.join(output_dir, f'best_adv_classifier.pt')
+        torch.save({
+            'epoch': epoch,
+            'state_dict': net.state_dict(),
+            'optimizer': optimizer.state_dict(),
+            'best_test_adv_acc': best_test_adv_acc,
+            'best_test_adv_loss': best_test_adv_loss,
+            'best_test_adv_epoch': best_test_adv_epoch
+        }, checkpoint_path)
+        
+    # Save the model with cifar_{}_best_model.pth, where {} is cfg.optimizer.name
     checkpoint_path = os.path.join(output_dir, f'classifier_epoch_{epoch}.pt')
     torch.save({
         'epoch': epoch,
         'state_dict': net.state_dict(),
         'optimizer': optimizer.state_dict(),
-        'best_test_acc': best_test_acc,
-        'best_train_ce_loss': best_train_ce_loss,
-        'best_train_acc': best_train_acc,
-        'best_test_loss': best_test_loss
+        'best_train_clean_acc': best_train_clean_acc,
+        'best_train_clean_loss': best_train_clean_loss,
+        'best_train_adv_acc': best_train_adv_acc,
+        'best_train_adv_loss': best_train_adv_loss,
+        'best_train_clean_epoch': best_train_clean_epoch,
+        'best_train_adv_epoch': best_train_adv_epoch,
+        'best_test_clean_acc': best_test_clean_acc,
+        'best_test_clean_loss': best_test_clean_loss,
+        'best_test_adv_acc': best_test_adv_acc,
+        'best_test_adv_loss': best_test_adv_loss,
+        'best_test_clean_epoch': best_test_clean_epoch,
+        'best_test_adv_epoch': best_test_adv_epoch
     }, checkpoint_path)
+
         
 # Log best test accuracy and best train loss to wandb        
-print(f"Best | Test - Acc: {best_test_acc} | Loss: {best_test_loss} | Train - Acc: {best_train_acc} | Loss: {best_train_ce_loss}")
+print(f"Best | Train: Clean - Acc: {best_train_clean_acc}, C.Loss: {best_train_clean_loss} | Adv - Acc: {best_train_adv_acc}, A.Loss: {best_train_adv_loss}")
+print(f"Best | Test: Clean - Acc: {best_test_clean_acc}, C.Loss: {best_test_clean_loss} | Adv - Acc: {best_test_adv_acc}, A.Loss: {best_test_adv_loss}")
 
 wandb.log({
-    "best_test_acc": best_test_acc,
-    "best_test_loss": best_test_loss,
-    "best_train_acc": best_train_acc,
-    "best_train_ce_loss": best_train_ce_loss
+    "best_train_clean_acc": best_train_clean_acc,
+    "best_train_clean_loss": best_train_clean_loss,
+    "best_train_adv_acc": best_train_adv_acc,
+    "best_train_adv_loss": best_train_adv_loss,
+    "best_train_clean_epoch": best_train_clean_epoch,
+    "best_train_adv_epoch": best_train_adv_epoch,
+    "best_test_clean_acc": best_test_clean_acc,
+    "best_test_clean_loss": best_test_clean_loss,
+    "best_test_adv_acc": best_test_adv_acc,
+    "best_test_adv_loss": best_test_adv_loss,
+    "best_test_clean_epoch": best_test_clean_epoch,
+    "best_test_adv_epoch": best_test_adv_epoch
 })
 
 wandb.log({

@@ -7,11 +7,11 @@ seed: 0
 add_noise: True
 add_langevin_noise: False
 
-robustness_test: True
+robustness_test: False
 
 num_particles: 3
 
-issvgd: False
+issvgd: True
 svgd:
   is_ig: False
   ig_lambda: 5
@@ -21,7 +21,7 @@ svgd:
 
 classifier:
   name: imagenet_classifier
-  path: runs/classifiers/clean_models/R50/ens3p/
+  path: runs/classifiers/adv_models/R50/svgd3p/
 
 optimizer:
   module: torch.optim
@@ -37,6 +37,16 @@ scheduler:
     lr_epochs: !!python/tuple [0,1,6,12,15,20]
     lr_values: !!python/tuple [0,0.4,0.04,0.004,0.0004,0.0001]
 
+image_attack:
+  module: advertorch.attacks
+  name: PGDAttack
+  args:
+    eps: 0.0156862745 # 4/255 in [0, 1]
+    eps_iter: 0.0039215686 # 1/255 in [0, 1]
+    nb_iter: 5
+    clip_min: -1.0
+    clip_max: 1.0
+
 dataset:
   name: mixed10
   num_classes: 10
@@ -49,4 +59,4 @@ dataset:
 
 whatsnew:
   default: "Resnet50 Classifier with exact same logic of authors + S3P/E3P/S3P-IG"
-  content: "Clean Classifiers: R50, E3P, 0 seed."
+  content: "Adv Classifiers: R50, S3P, 0 seed."
