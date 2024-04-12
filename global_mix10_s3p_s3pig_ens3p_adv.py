@@ -222,7 +222,7 @@ class BayesWrap(nn.Module):
 
 # parse command line options
 parser = argparse.ArgumentParser(description="On-manifold adv training")
-parser.add_argument("--config", default="our_experiments/classifiers/clean/mix10_clean_s3p_s3pig_ens3p.yml")
+parser.add_argument("--config", default="our_experiments/classifiers/adv/mix10_adv_s3p_s3pig_ens3p.yml")
 parser.add_argument("--resume", default="")
 args = parser.parse_args()
 
