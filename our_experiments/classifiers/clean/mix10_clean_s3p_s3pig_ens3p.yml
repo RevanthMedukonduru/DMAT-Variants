@@ -1,4 +1,4 @@
-num_epochs: 20
+num_epochs: 40
 
 gpu_id: 0
 
@@ -6,6 +6,8 @@ seed: 0
 
 add_noise: True
 add_langevin_noise: False
+
+robustness_test: False
 
 num_particles: 3
 

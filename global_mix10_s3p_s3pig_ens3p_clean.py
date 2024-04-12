@@ -461,7 +461,8 @@ for epoch in range(start_epoch, cfg.num_epochs):
     epoch_test_loss, epoch_test_acc = test(epoch)
     
     # Robustness Test
-    robustness_test(epoch)
+    if cfg.robustness_test:
+        robustness_test(epoch)
     
     # lr used
     lr = optimizer.param_groups[0]['lr']
