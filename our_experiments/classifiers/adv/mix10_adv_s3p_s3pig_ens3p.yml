@@ -52,10 +52,10 @@ dataset:
   num_classes: 10
   train:
     path: /data/stylegan_old/dataset/imagenet
-    batch_size: 16
+    batch_size: 32
   test:
     path: /data/stylegan_old/dataset/imagenet
-    batch_size: 16
+    batch_size: 32
 
 whatsnew:
   default: "Resnet50 Classifier with exact same logic of authors + S3P/E3P/S3P-IG"
