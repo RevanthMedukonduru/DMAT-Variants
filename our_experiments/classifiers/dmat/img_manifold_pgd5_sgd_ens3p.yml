@@ -48,13 +48,15 @@ dataset:
   name: mixed10
   num_classes: 10
   train:
-    path: /data/Dual-Manifold-Adversarial-Training/stylegan_old/dataset
-    batch_size: 64
+    path: /data/stylegan_old/dataset/imagenet
+    batch_size: 32
   test:
-    path: /data/Dual-Manifold-Adversarial-Training/stylegan_old/dataset
-    batch_size: 64
+    path: /data/stylegan_old/dataset/imagenet
+    batch_size: 16
 
 whatsnew:
   default: "Config is based on Previous Clean acc."
   content: 
     "1": "SVGD-1 PGD-5 attack."
+    "2": "SVGD-3 PGD-5 attack."
+    "3": "ENS-3 PGD-5 attack."

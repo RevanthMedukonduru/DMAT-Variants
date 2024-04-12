@@ -23,7 +23,6 @@ import copy
 import dnnlib, legacy
 import wandb
 from bigmodelvis import Visualization
-from koila import lazy
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -223,7 +222,7 @@ class BayesWrap(nn.Module):
 
 # parse command line options
 parser = argparse.ArgumentParser(description="On-manifold adv training")
-parser.add_argument("--config", default="our_experiments/classifiers/img_manifold_pgd5_sgd_svgd3p.yml")
+parser.add_argument("--config", default="our_experiments/classifiers/img_manifold_pgd5_sgd_ens3p.yml")
 parser.add_argument("--resume", default="")
 args = parser.parse_args()
 
@@ -571,14 +570,7 @@ def test(epoch, mode="Test"):
         with ctx_noparamgrad_and_eval(net):
             images_adv = test_attacker.perturb(images, labels)    
             
-            # here we need to preprocess the perturbed latent Vector based Adversarial Images as well before passing to the classifier
-            # images_ladv = transform.classifier_preprocess_layer(images_ladv) # input -> Clamps to [-1, 1], scales to [0, 1] -> returned
-            
-            # normalise the images, images_adv, images_ladv
-            # images = transforms.Normalize(CIFAR10_MEAN, CIFAR10_STD)(images)
-            # images_adv = transforms.Normalize(CIFAR10_MEAN, CIFAR10_STD)(images_adv)
-            # images_ladv = transforms.Normalize(CIFAR10_MEAN, CIFAR10_STD)(images_ladv)
-            
+                
         # Forward pass
         logits_clean = net(images)
         logits_adv = net(images_adv)

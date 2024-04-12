@@ -1,0 +1,50 @@
+num_epochs: 20
+
+gpu_id: 0
+
+seed: 0
+
+add_noise: True
+add_langevin_noise: False
+
+num_particles: 3
+
+issvgd: True
+svgd:
+  is_ig: False
+  ig_lambda: 5
+  p_update: 0.95 
+  alpha: 0.001
+  particle_push_limit_epochs: 100
+
+classifier:
+  name: imagenet_classifier
+  path: runs/classifiers/clean_models/R50/svgd3p/
+
+optimizer:
+  module: torch.optim
+  name: SGD
+  args:
+    lr: 0.1
+    momentum: 0.9
+    weight_decay: 0.0005
+
+scheduler:
+  type: cyclic
+  args:
+    lr_epochs: !!python/tuple [0,1,6,12,15,20]
+    lr_values: !!python/tuple [0,0.4,0.04,0.004,0.0004,0.0001]
+
+dataset:
+  name: mixed10
+  num_classes: 10
+  train:
+    path: /data/stylegan_old/dataset/imagenet
+    batch_size: 16
+  test:
+    path: /data/stylegan_old/dataset/imagenet
+    batch_size: 16
+
+whatsnew:
+  default: "Resnet50 Classifier with exact same logic of authors + S3P/E3P/S3P-IG"
+  content: "Clean Classifiers: R50, S3P, 0 seed."

@@ -1,5 +1,6 @@
 import os
 import yaml
+from yaml import Loader, load
 import math
 import random
 import importlib
@@ -55,18 +56,17 @@ def weights_init(m):
         nn.init.constant_(m.bias, 0)
 
 
-def set_device(cfg):
-    gpu = 0
+def set_device(cfg, device):
     if cfg.distributed:
         gpu = os.environ['LOCAL_RANK']
         dist.init_process_group(backend='nccl',
                                 init_method='env://')
 
-    torch.cuda.set_device(gpu)
+    torch.cuda.set_device(device)
 
 
 def set_random_seed(cfg):
-    seed = 0
+    seed = cfg.seed
 
     np.random.seed(seed)
     torch.manual_seed(seed)
@@ -78,13 +78,14 @@ def set_random_seed(cfg):
 def load_config(config_file):
     with open(config_file) as f:
         config = DotDict(yaml.load(f, Loader = yaml.FullLoader))
+        # config = load(f, Loader = yaml.FullLoader)
     if 'distributed' not in config:
         config['distributed'] = False
     return config
 
 
-def move_to_device(model, cfg):
-    model = model.cuda()
+def move_to_device(model, cfg, device):
+    model = model.to(device)
     if cfg.distributed:
         model = DDP(model)
     model = nn.DataParallel(model)
@@ -176,4 +177,3 @@ def get_attack(attack_cfg, classifier):
     attacker = attack_fn(predict=classifier, **attack_cfg.args)
 
     return attacker
-
