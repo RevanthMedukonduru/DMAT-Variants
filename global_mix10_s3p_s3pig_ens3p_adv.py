@@ -301,7 +301,7 @@ gan.load_state_dict(state_dict)
 gan = gan.synthesis
 for p in gan.parameters():
     p.requires_grad_(False)
-gan = move_to_device(gan, cfg)
+gan = move_to_device(gan, cfg, device)
 model = torch.nn.Sequential(gan, net)
 model = model.to(device)
 

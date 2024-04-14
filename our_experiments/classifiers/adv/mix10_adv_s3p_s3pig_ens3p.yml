@@ -7,7 +7,7 @@ seed: 0
 add_noise: True
 add_langevin_noise: False
 
-robustness_test: False
+robustness_test: True
 
 num_particles: 3
 
@@ -21,7 +21,7 @@ svgd:
 
 classifier:
   name: imagenet_classifier
-  path: runs/classifiers/adv_models/R50/variant_here/
+  path: runs/classifiers/adv_models/R50/SVGD3P/
 
 # optimizer:
 #   module: torch.optim
