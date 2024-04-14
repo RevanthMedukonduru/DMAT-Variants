@@ -16,7 +16,7 @@ svgd:
   is_ig: False
   ig_lambda: 5
   p_update: 0.95 
-  alpha: 0.001
+  alpha: 0.03
   particle_push_limit_epochs: 100
 
 classifier:

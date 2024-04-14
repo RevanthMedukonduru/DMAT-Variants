@@ -262,6 +262,20 @@ if args.resume:
     
 criterion = torch.nn.CrossEntropyLoss().to(device)
 
+# set stylegan
+gan_path = '/data/stylegan_old/pretrain/stylegan_imagenet.pth'
+gan = StyleGANGeneratorModel()
+state_dict = torch.load(gan_path)
+var_name = 'truncation.truncation'
+state_dict[var_name] = gan.state_dict()[var_name]
+gan.load_state_dict(state_dict)
+gan = gan.synthesis
+for p in gan.parameters():
+    p.requires_grad_(False)
+gan = move_to_device(gan, cfg)
+model = torch.nn.Sequential(gan, net)
+model = model.to(device)
+
 # set dataset, dataloader
 dataset = get_dataset(cfg)
 transform = get_transform(cfg)
@@ -364,9 +378,14 @@ def test(epoch):
 
 # ----------------------- TESTING WITH ADV - ROBUSTNESS ATTACKS -----------------------
 # ADV attackers
-adv_attack_budgets = [0.015, 0.02, 0.035, 0.05, 0.07, 0.1] # TOBEFIXED
-robustness_acc_results = [0 for _ in range(len(adv_attack_budgets))]
-robustness_epoch_results = [-1 for _ in range(len(adv_attack_budgets))]
+adv_attack_budgets = [0.035, 0.055, 0.07]
+ladv_attack_budgets = [0.01, 0.02, 0.03]
+
+robustness_adv_acc_results = [0 for _ in range(len(adv_attack_budgets))]
+robustness_adv_epoch_results = [-1 for _ in range(len(adv_attack_budgets))]
+robustness_ladv_acc_results = [0 for _ in range(len(ladv_attack_budgets))]
+robustness_ladv_epoch_results = [-1 for _ in range(len(ladv_attack_budgets))]
+
 adv_attackers = []
 for budget in adv_attack_budgets:
     adv_attackers.append(PGDAttack(predict=net,
@@ -375,20 +394,35 @@ for budget in adv_attack_budgets:
                                    nb_iter=50,
                                    clip_min=-1.0,
                                    clip_max=1.0)) # Image ranges change for MIX10, CIFAR
-    
+
+# LADV attackers
+ladv_attackers = []
+for budget in ladv_attack_budgets:
+    ladv_attackers.append(PGDAttack(predict=model,
+                                    eps=budget,
+                                    eps_iter=budget/4.0,
+                                    nb_iter=50,
+                                    clip_min=None,
+                                    clip_max=None))    
+
 def robustness_test(epoch):
     
     dataloader = testloader
     
     progress_bar = tqdm(dataloader)
     net.eval()
+    gan.eval()
     
     # Adversarial Image - Image attack
     loss_adv_meters = [AverageMeter() for _ in range(len(adv_attackers))]
     acc_adv_meters = [AverageMeter() for _ in range(len(adv_attackers))]
+    
+    # Latent Vector based Adversarial Image - Latent attack
+    loss_ladv_meters = [AverageMeter() for _ in range(len(ladv_attackers))]
+    acc_ladv_meters = [AverageMeter() for _ in range(len(ladv_attackers))]
 
-    for batch_idx, (images, _, labels) in enumerate(progress_bar):
-        images, labels = images.to(device), labels.to(device)
+    for batch_idx, (images, latents, labels) in enumerate(progress_bar):
+        images, latents, labels = images.to(device), latents.to(device), labels.to(device)
         
         # Adversarial Image - Image attackers - Robustness Test
         for i, test_attacker in enumerate(adv_attackers):
@@ -408,14 +442,43 @@ def robustness_test(epoch):
                 acc_adv = (pred_adv == labels).float().mean().item() * 100.0
 
             acc_adv_meters[i].update(acc_adv)
-            loss_adv_meters[i].update(loss_adv.item()) 
+            loss_adv_meters[i].update(loss_adv.item())
+        
+        # Latent Vector based Adversarial Image - Latent attackers - Robustness Test
+        for i, test_latent_attacker in enumerate(ladv_attackers):
+            with ctx_noparamgrad_and_eval(model):
+                latents_adv = test_latent_attacker.perturb(latents, labels)
+                images_ladv = gan(latents_adv).detach()
+                
+                # Forward pass
+                logits_ladv = net(images_ladv)
+                
+                # Calculate loss
+                loss_ladv = criterion(logits_ladv, labels)
+                
+                # Calculate Predictions
+                pred_ladv = logits_ladv.argmax(dim=1)
+                
+                # Calculate accuracy
+                acc_ladv = (pred_ladv == labels).float().mean().item() * 100.0
+                
+            acc_ladv_meters[i].update(acc_ladv)
+            loss_ladv_meters[i].update(loss_ladv.item())    
+         
     
     for i, budget in enumerate(adv_attack_budgets):
         wandb.log({f"epoch": epoch, f"test_adv_acc_{budget}": acc_adv_meters[i].avg})
         
-        if acc_adv_meters[i].avg > robustness_acc_results[i]:
-            robustness_acc_results[i] = acc_adv_meters[i].avg
-            robustness_epoch_results[i] = epoch
+        if acc_adv_meters[i].avg > robustness_adv_acc_results[i]:
+            robustness_adv_acc_results[i] = acc_adv_meters[i].avg
+            robustness_adv_epoch_results[i] = epoch
+    
+    for i, budget in enumerate(ladv_attack_budgets):
+        wandb.log({f"epoch": epoch, f"test_ladv_acc_{budget}": acc_ladv_meters[i].avg})
+        
+        if acc_ladv_meters[i].avg > robustness_ladv_acc_results[i]:
+            robustness_ladv_acc_results[i] = acc_ladv_meters[i].avg
+            robustness_ladv_epoch_results[i] = epoch
     
 # ----------------------- ROBUSTNESS ATTACKS -----------------------
 
@@ -543,9 +606,12 @@ wandb.log({
 })
 
 wandb.log({
-    "budgets": adv_attack_budgets,
-    "robustness_acc_results": robustness_acc_results,
-    "robustness_epoch_results": robustness_epoch_results
+    "adv_budgets": adv_attack_budgets,
+    "robustness_acc_results": robustness_adv_acc_results,
+    "robustness_epoch_results": robustness_adv_epoch_results,
+    "ladv_budgets": ladv_attack_budgets,
+    "robustness_ladv_acc_results": robustness_ladv_acc_results,
+    "robustness_ladv_epoch_results": robustness_ladv_epoch_results
 })
 
 wandb.finish()        
