@@ -1,4 +1,4 @@
-num_epochs: 40
+num_epochs: 20
 
 gpu_id: 0
 
@@ -7,11 +7,11 @@ seed: 0
 add_noise: True
 add_langevin_noise: False
 
-robustness_test: True
+robustness_test: False
 
 num_particles: 3
 
-issvgd: False
+issvgd: True
 svgd:
   is_ig: False
   ig_lambda: 5
@@ -21,18 +21,24 @@ svgd:
 
 classifier:
   name: imagenet_classifier
-  path: runs/classifiers/clean_models/R50/ens3p/
+  path: runs/classifiers/clean_models/R50/variant_here/
+
+# optimizer:
+#   module: torch.optim
+#   name: SGD
+#   args:
+#     lr: 0.1
+#     momentum: 0.9
+#     weight_decay: 0.0005
 
 optimizer:
   module: torch.optim
-  name: SGD
+  name: Adam
   args:
-    lr: 0.1
-    momentum: 0.9
-    weight_decay: 0.0005
+    lr: 0.001
 
 scheduler:
-  type: cyclic
+  type: None #cyclic - is removed from original - Taking too long to converge with SGD.
   args:
     lr_epochs: !!python/tuple [0,1,6,12,15,20]
     lr_values: !!python/tuple [0,0.4,0.04,0.004,0.0004,0.0001]
@@ -48,5 +54,5 @@ dataset:
     batch_size: 16
 
 whatsnew:
-  default: "Resnet50 Classifier with exact same logic of authors + S3P/E3P/S3P-IG"
+  default: "Resnet50 Classifier with exact same logic of authors, but Optimiser is Adam and no LR sche + S1P/S3P/E3P/S3P-IG"
   content: "Clean Classifiers: R50, E3P, 0 seed."

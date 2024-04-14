@@ -272,7 +272,7 @@ gan.load_state_dict(state_dict)
 gan = gan.synthesis
 for p in gan.parameters():
     p.requires_grad_(False)
-gan = move_to_device(gan, cfg)
+gan = move_to_device(gan, cfg, device)
 model = torch.nn.Sequential(gan, net)
 model = model.to(device)
 
@@ -378,8 +378,8 @@ def test(epoch):
 
 # ----------------------- TESTING WITH ADV - ROBUSTNESS ATTACKS -----------------------
 # ADV attackers
-adv_attack_budgets = [0.035, 0.055, 0.07]
-ladv_attack_budgets = [0.01, 0.02, 0.03]
+adv_attack_budgets = [0.0156862745, 0.035, 0.055]
+ladv_attack_budgets = [0.01, 0.02]
 
 robustness_adv_acc_results = [0 for _ in range(len(adv_attack_budgets))]
 robustness_adv_epoch_results = [-1 for _ in range(len(adv_attack_budgets))]
