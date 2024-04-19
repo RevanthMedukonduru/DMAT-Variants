@@ -15,10 +15,20 @@ optimizer:
   args:
     lr: 0.001
 
-robustness_test: False
+robustness_test: True
 
 preprocessing: ["mean/std normalize", "flip/translation"]
 
+image_attack:
+  module: advertorch.attacks
+  name: PGDAttack
+  args:
+    eps: 0.0156862745 # 4/255 as per paper, supplemental material
+    eps_iter: 0.0039215686 # 1/255 as per paper, supplemental material
+    nb_iter: 5
+    clip_min: -1.0
+    clip_max: 1.0
+    
 dataset:
   name: mixed10
   num_classes: 10
