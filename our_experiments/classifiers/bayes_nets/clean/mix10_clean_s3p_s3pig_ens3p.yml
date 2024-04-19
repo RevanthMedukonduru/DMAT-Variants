@@ -1,4 +1,4 @@
-num_epochs: 20
+num_epochs: 30
 
 gpu_id: 0
 
@@ -7,11 +7,11 @@ seed: 0
 add_noise: True
 add_langevin_noise: False
 
-robustness_test: False
+robustness_test: True
 
-num_particles: 3
+num_particles: 1
 
-issvgd: True
+issvgd: False
 svgd:
   is_ig: False
   ig_lambda: 5
@@ -21,7 +21,7 @@ svgd:
 
 classifier:
   name: imagenet_classifier
-  path: runs/classifiers/clean_models/R50/variant_here/
+  path: runs/classifiers/clean_models/R50/SVGD1P/
 
 # optimizer:
 #   module: torch.optim
@@ -51,8 +51,8 @@ dataset:
     batch_size: 16
   test:
     path: /data/stylegan_old/dataset/imagenet
-    batch_size: 16
+    batch_size: 64
 
 whatsnew:
   default: "Resnet50 Classifier with exact same logic of authors, but Optimiser is Adam and no LR sche + S1P/S3P/E3P/S3P-IG"
-  content: "Clean Classifiers: R50, E3P, 0 seed."
+  content: "Clean Classifiers: R50, S1P, 0 seed."

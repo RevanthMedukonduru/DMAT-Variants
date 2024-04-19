@@ -1,0 +1,32 @@
+num_epochs: 40
+gpu_id: 0
+seed: 0
+
+classifier:
+  name: imagenet_classifier
+  path: runs/classifiers/single_networks/R50/Mix10/clean_models/
+
+network:
+  name: R50
+
+optimizer:
+  module: torch.optim
+  name: Adam
+  args:
+    lr: 0.001
+
+robustness_test: False
+
+preprocessing: ["mean/std normalize", "flip/translation"]
+
+dataset:
+  name: mixed10
+  num_classes: 10
+  train:
+    path: /data/stylegan_old/dataset/imagenet
+    batch_size: 64
+  test:
+    path: /data/stylegan_old/dataset/imagenet
+    batch_size: 64
+
+whatsHapenning: "Training a single network on Imagenet-10 with Adam optimizer - Clean training."
