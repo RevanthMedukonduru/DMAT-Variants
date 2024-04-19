@@ -4,7 +4,7 @@ seed: 0
 
 classifier:
   name: imagenet_classifier
-  path: runs/classifiers/single_networks/R50/Mix10/adv_models/
+  path: runs/classifiers/single_networks/R50/Mix10/dmat_models/
 
 network:
   name: R50
@@ -16,7 +16,10 @@ optimizer:
     lr: 0.001
 
 is_ig: False
-lambda_ig: 1 # Need to test and find the best value
+ig:
+  lambda_a: 0.5 # Need to test and find the best value
+  lambda_la: 0.5 # Need to test and find the best value
+  lambda_ig: 1 # Need to test and find the best value
 
 robustness_test: True
 
@@ -32,6 +35,16 @@ image_attack:
     clip_min: -1.0
     clip_max: 1.0
 
+latent_attack:
+  module: advertorch.attacks
+  name: PGDAttack
+  args:
+    eps: 0.02
+    eps_iter: 0.005
+    nb_iter: 5
+    clip_min: null
+    clip_max: null
+
 dataset:
   name: mixed10
   num_classes: 10
@@ -42,4 +55,4 @@ dataset:
     path: /data/stylegan_old/dataset/imagenet
     batch_size: 64
 
-whatsHapenning: "Training a single network on Imagenet-10 with Adam optimizer - Adv training."
+whatsHapenning: "Training a single network on Imagenet-10 with Adam optimizer - DMAT training."

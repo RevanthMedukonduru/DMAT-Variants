@@ -185,104 +185,104 @@ def train(epoch):
 
     return image_loss_meter.avg, latent_loss_meter.avg, total_loss_meter.avg
 
-def test(epoch):
-    progress_bar = tqdm(testloader)
-    net.eval()
-
-    acc_clean = AverageMeter()
-    acc_adv = AverageMeter()
-
-    for batch_idx, (images, _, labels) in enumerate(progress_bar):
-        images, labels = images.cuda(), labels.cuda()
-        with ctx_noparamgrad_and_eval(net):
-            images_adv = test_attacker.perturb(images, labels)
-
-            pred_clean = net(images).argmax(dim=1)
-            pred_adv = net(images_adv).argmax(dim=1)
-
-        acc_clean.update((pred_clean == labels).float().mean().item() * 100.0, images.size(0))
-        acc_adv.update((pred_adv == labels).float().mean().item() * 100.0, images.size(0))
-
-        progress_bar.set_description(
-            'Test Epoch: [{0}] '
-            'Clean Acc: {acc_clean.val:.3f} ({acc_clean.avg:.3f}) '
-            'Adv Acc: {acc_adv.val:.3f} ({acc_adv.avg:.3f}) '.format(epoch, acc_clean=acc_clean, acc_adv=acc_adv))
-
-    logging.info(f'Epoch: {epoch} | Clean: {acc_clean.avg:.2f} % | Adv: {acc_adv.avg:.2f} %')
-
-
-
-# def test(epoch, mode="Test"):
+# def test(epoch):
 #     progress_bar = tqdm(testloader)
 #     net.eval()
-#     gan.eval()
 
-#     # Clean Image
-#     loss_clean_meter = AverageMeter()
-#     acc_clean_meter = AverageMeter()
-    
-#     # Adversarial Image - Image attack
-#     loss_adv_meter = AverageMeter()
-#     acc_adv_meter = AverageMeter()
-    
-#     # Latent Vector based Adversarial Image - Latent attack
-#     loss_ladv_meter = AverageMeter()
-#     acc_ladv_meter = AverageMeter()
+#     acc_clean = AverageMeter()
+#     acc_adv = AverageMeter()
 
-#     for batch_idx, (images, latents, labels) in enumerate(progress_bar):
-#         images, latents, labels = images.cuda(), latents.cuda(), labels.cuda()
-        
-#         with ctx_noparamgrad_and_eval(model):
+#     for batch_idx, (images, _, labels) in enumerate(progress_bar):
+#         images, labels = images.cuda(), labels.cuda()
+#         with ctx_noparamgrad_and_eval(net):
 #             images_adv = test_attacker.perturb(images, labels)
-#             latents_adv = test_latent_attacker.perturb(latents, labels)
-#             images_ladv = gan(latents_adv).detach()
-            
-#             # here we need to preprocess the perturbed latent Vector based Adversarial Images as well before passing to the classifier
-#             # images_ladv = transform.classifier_preprocess_layer(images_ladv) # input -> Clamps to [-1, 1], scales to [0, 1] -> returned
-            
-#             # normalise the images, images_adv, images_ladv
-#             # images = transforms.Normalize(CIFAR10_MEAN, CIFAR10_STD)(images)
-#             # images_adv = transforms.Normalize(CIFAR10_MEAN, CIFAR10_STD)(images_adv)
-#             # images_ladv = transforms.Normalize(CIFAR10_MEAN, CIFAR10_STD)(images_ladv)
-            
-#             # Forward pass
-#             logits_clean = net(images)
-#             logits_adv = net(images_adv)
-#             logits_ladv = net(images_ladv)
-            
-#             # Calculate loss
-#             loss_clean = criterion(logits_clean, labels)
-#             loss_adv = criterion(logits_adv, labels)
-#             loss_ladv = criterion(logits_ladv, labels)
-            
-#             # Calculate Predictions
-#             pred_clean = logits_clean.argmax(dim=1)
-#             pred_adv = logits_adv.argmax(dim=1)
-#             pred_ladv = logits_ladv.argmax(dim=1)
-            
-#             # Calculate accuracy
-#             acc_clean = (pred_clean == labels).float().mean().item() * 100.0
-#             acc_adv = (pred_adv == labels).float().mean().item() * 100.0
-#             acc_ladv = (pred_ladv == labels).float().mean().item() * 100.0
-            
-#         acc_clean_meter.update(acc_clean)
-#         acc_adv_meter.update(acc_adv)
-#         acc_ladv_meter.update(acc_ladv)
-        
-#         loss_clean_meter.update(loss_clean.item())
-#         loss_adv_meter.update(loss_adv.item())
-#         loss_ladv_meter.update(loss_ladv.item())
-        
-#         progress_bar.set_description(
-#             'Ep: [{epoch}] '
-#             'Cl Lo: ({loss_clean.avg:.3f}) '
-#             'Cl Ac:  ({acc_clean.avg:.3f}) '
-#             'Ad Lo: ({loss_adv.avg:.3f}) '
-#             'Ad Ac: ({acc_adv.avg:.3f}) '
-#             'LA Lo: ({loss_ladv.avg:.3f}) '
-#             'LA Ac: ({acc_ladv.avg:.3f}) '.format(epoch=epoch, loss_clean=loss_clean_meter, acc_clean=acc_clean_meter, loss_adv=loss_adv_meter, acc_adv=acc_adv_meter, loss_ladv=loss_ladv_meter, acc_ladv=acc_ladv_meter))
 
-#     return loss_clean_meter.avg, acc_clean_meter.avg, loss_adv_meter.avg, acc_adv_meter.avg, loss_ladv_meter.avg, acc_ladv_meter.avg
+#             pred_clean = net(images).argmax(dim=1)
+#             pred_adv = net(images_adv).argmax(dim=1)
+
+#         acc_clean.update((pred_clean == labels).float().mean().item() * 100.0, images.size(0))
+#         acc_adv.update((pred_adv == labels).float().mean().item() * 100.0, images.size(0))
+
+#         progress_bar.set_description(
+#             'Test Epoch: [{0}] '
+#             'Clean Acc: {acc_clean.val:.3f} ({acc_clean.avg:.3f}) '
+#             'Adv Acc: {acc_adv.val:.3f} ({acc_adv.avg:.3f}) '.format(epoch, acc_clean=acc_clean, acc_adv=acc_adv))
+
+#     logging.info(f'Epoch: {epoch} | Clean: {acc_clean.avg:.2f} % | Adv: {acc_adv.avg:.2f} %')
+
+
+
+def test(epoch, mode="Test"):
+    progress_bar = tqdm(testloader)
+    net.eval()
+    gan.eval()
+
+    # Clean Image
+    loss_clean_meter = AverageMeter()
+    acc_clean_meter = AverageMeter()
+    
+    # Adversarial Image - Image attack
+    loss_adv_meter = AverageMeter()
+    acc_adv_meter = AverageMeter()
+    
+    # Latent Vector based Adversarial Image - Latent attack
+    loss_ladv_meter = AverageMeter()
+    acc_ladv_meter = AverageMeter()
+
+    for batch_idx, (images, latents, labels) in enumerate(progress_bar):
+        images, latents, labels = images.cuda(), latents.cuda(), labels.cuda()
+        
+        with ctx_noparamgrad_and_eval(model):
+            images_adv = test_attacker.perturb(images, labels)
+            latents_adv = test_latent_attacker.perturb(latents, labels)
+            images_ladv = gan(latents_adv).detach()
+            
+            # here we need to preprocess the perturbed latent Vector based Adversarial Images as well before passing to the classifier
+            # images_ladv = transform.classifier_preprocess_layer(images_ladv) # input -> Clamps to [-1, 1], scales to [0, 1] -> returned
+            
+            # normalise the images, images_adv, images_ladv
+            # images = transforms.Normalize(CIFAR10_MEAN, CIFAR10_STD)(images)
+            # images_adv = transforms.Normalize(CIFAR10_MEAN, CIFAR10_STD)(images_adv)
+            # images_ladv = transforms.Normalize(CIFAR10_MEAN, CIFAR10_STD)(images_ladv)
+            
+            # Forward pass
+            logits_clean = net(images)
+            logits_adv = net(images_adv)
+            logits_ladv = net(images_ladv)
+            
+            # Calculate loss
+            loss_clean = criterion(logits_clean, labels)
+            loss_adv = criterion(logits_adv, labels)
+            loss_ladv = criterion(logits_ladv, labels)
+            
+            # Calculate Predictions
+            pred_clean = logits_clean.argmax(dim=1)
+            pred_adv = logits_adv.argmax(dim=1)
+            pred_ladv = logits_ladv.argmax(dim=1)
+            
+            # Calculate accuracy
+            acc_clean = (pred_clean == labels).float().mean().item() * 100.0
+            acc_adv = (pred_adv == labels).float().mean().item() * 100.0
+            acc_ladv = (pred_ladv == labels).float().mean().item() * 100.0
+            
+        acc_clean_meter.update(acc_clean)
+        acc_adv_meter.update(acc_adv)
+        acc_ladv_meter.update(acc_ladv)
+        
+        loss_clean_meter.update(loss_clean.item())
+        loss_adv_meter.update(loss_adv.item())
+        loss_ladv_meter.update(loss_ladv.item())
+        
+        progress_bar.set_description(
+            'Ep: [{epoch}] '
+            'Cl Lo: ({loss_clean.avg:.3f}) '
+            'Cl Ac:  ({acc_clean.avg:.3f}) '
+            'Ad Lo: ({loss_adv.avg:.3f}) '
+            'Ad Ac: ({acc_adv.avg:.3f}) '
+            'LA Lo: ({loss_ladv.avg:.3f}) '
+            'LA Ac: ({acc_ladv.avg:.3f}) '.format(epoch=epoch, loss_clean=loss_clean_meter, acc_clean=acc_clean_meter, loss_adv=loss_adv_meter, acc_adv=acc_adv_meter, loss_ladv=loss_ladv_meter, acc_ladv=acc_ladv_meter))
+
+    return loss_clean_meter.avg, acc_clean_meter.avg, loss_adv_meter.avg, acc_adv_meter.avg, loss_ladv_meter.avg, acc_ladv_meter.avg
 
 
 for epoch in range(start_epoch, cfg.num_epochs):
