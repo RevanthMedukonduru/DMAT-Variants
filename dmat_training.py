@@ -104,7 +104,7 @@ if args.resume:
     best_test_loss_a = ckpt['best_test_loss_a']
     best_test_epoch_a = ckpt['best_test_epoch_a']
     
-    best_train_acc_la = ckpt['best_train_acc_la']
+    best_train_acc_la = ckpt['best_train_acc_la'] 
     best_train_loss_la = ckpt['best_train_loss_la']
     best_train_epoch_la = ckpt['best_train_epoch_la']
     
@@ -340,7 +340,7 @@ def test_dmat(epoch):
 
 # ----------------------- TESTING WITH ADV, LADV - ROBUSTNESS ATTACKS - ON-OFF-PGD50 -----------------------
 # ADV attackers
-adv_attack_budgets = [0.02, 0.05, 0.1, 0.2, 0.3]
+adv_attack_budgets = [0.02, 0.05] #[0.02, 0.05, 0.1, 0.2, 0.3]
 
 robustness_adv_acc_results = [0 for _ in range(len(adv_attack_budgets))]
 robustness_adv_epoch_results = [-1 for _ in range(len(adv_attack_budgets))]
@@ -355,7 +355,7 @@ for budget in adv_attack_budgets:
                                    clip_max=cfg.image_attack.args.clip_max))
 
 # LADV attackers
-ladv_attack_budgets = [0.02, 0.05, 0.1, 0.2, 0.3]
+ladv_attack_budgets = [0.02, 0.05] #[0.02, 0.05, 0.1, 0.2, 0.3]
 
 robustness_ladv_acc_results = [0 for _ in range(len(ladv_attack_budgets))]
 robustness_ladv_epoch_results = [-1 for _ in range(len(ladv_attack_budgets))]
@@ -537,12 +537,12 @@ for epoch in (range(start_epoch, cfg.num_epochs)):
             'epoch': epoch,
             'state_dict': net.state_dict(),
             'optimizer': optimizer.state_dict(),
-            'best_train_loss_c': best_train_loss_c,
-            'best_train_acc_c': best_train_acc_c,
-            'best_train_epoch_c': best_train_epoch_c,
             'best_train_loss_a': best_train_loss_a,
             'best_train_acc_a': best_train_acc_a,
             'best_train_epoch_a': best_train_epoch_a,
+            'best_train_acc_la': best_train_acc_la,
+            'best_train_loss_la': best_train_loss_la,
+            'best_train_epoch_la': best_train_epoch_la,
             'best_test_loss_a': best_test_loss_a,
             'best_test_acc_a': best_test_acc_a,
             'best_test_epoch_a': best_test_epoch_a,
@@ -568,6 +568,9 @@ for epoch in (range(start_epoch, cfg.num_epochs)):
             'best_train_loss_a': best_train_loss_a,
             'best_train_acc_a': best_train_acc_a,
             'best_train_epoch_a': best_train_epoch_a,
+            'best_train_acc_la': best_train_acc_la,
+            'best_train_loss_la': best_train_loss_la,
+            'best_train_epoch_la': best_train_epoch_la,
             'best_test_loss_c': best_test_loss_c,
             'best_test_acc_c': best_test_acc_c,
             'best_test_epoch_c': best_test_epoch_c,
@@ -591,6 +594,9 @@ for epoch in (range(start_epoch, cfg.num_epochs)):
             'best_train_loss_a': best_train_loss_a,
             'best_train_acc_a': best_train_acc_a,
             'best_train_epoch_a': best_train_epoch_a,
+            'best_train_acc_la': best_train_acc_la,
+            'best_train_loss_la': best_train_loss_la,
+            'best_train_epoch_la': best_train_epoch_la,
             'best_test_loss_c': best_test_loss_c,
             'best_test_acc_c': best_test_acc_c,
             'best_test_epoch_c': best_test_epoch_c,

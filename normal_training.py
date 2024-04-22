@@ -33,7 +33,7 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 # parse command line options
 parser = argparse.ArgumentParser(description="Training using ImageNet-10 - SINGLE NET")
 parser.add_argument("--config", default="our_experiments/classifiers/single_net/clean/clean_config.yml")
-parser.add_argument("--resume", default="runs/classifiers/single_networks/R50/Mix10/clean_models/")
+parser.add_argument("--resume", default="runs/classifiers/single_networks/R50/Mix10/clean_models/mixed10_classifier_e_9.pt")
 args = parser.parse_args()
 
 cfg = load_config(args.config)
