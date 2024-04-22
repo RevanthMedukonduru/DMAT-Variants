@@ -33,7 +33,7 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 # parse command line options
 parser = argparse.ArgumentParser(description="Training using ImageNet-10 - SINGLE NET")
 parser.add_argument("--config", default="our_experiments/classifiers/single_net/clean/clean_config.yml")
-parser.add_argument("--resume", default=None)
+parser.add_argument("--resume", default="runs/classifiers/single_networks/R50/Mix10/clean_models/")
 args = parser.parse_args()
 
 cfg = load_config(args.config)
@@ -197,7 +197,7 @@ def test(epoch):
 
 # ----------------------- TESTING WITH ADV, LADV - ROBUSTNESS ATTACKS - ON-OFF-PGD50 -----------------------
 # ADV attackers
-adv_attack_budgets = [0.02, 0.05, 0.1, 0.2, 0.3]
+adv_attack_budgets = [0.02, 0.05] # [0.02, 0.05, 0.1, 0.2, 0.3]
 
 robustness_adv_acc_results = [0 for _ in range(len(adv_attack_budgets))]
 robustness_adv_epoch_results = [-1 for _ in range(len(adv_attack_budgets))]
@@ -212,7 +212,7 @@ for budget in adv_attack_budgets:
                                    clip_max=cfg.image_attack.args.clip_max))
 
 # LADV attackers
-ladv_attack_budgets = [0.02, 0.05, 0.1, 0.2, 0.3]
+ladv_attack_budgets = [0.02, 0.05] # [0.02, 0.05, 0.1, 0.2, 0.3]
 
 robustness_ladv_acc_results = [0 for _ in range(len(ladv_attack_budgets))]
 robustness_ladv_epoch_results = [-1 for _ in range(len(ladv_attack_budgets))]

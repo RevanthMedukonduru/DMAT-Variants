@@ -277,7 +277,7 @@ def test_adv(epoch):
 
 # ----------------------- TESTING WITH ADV, LADV - ROBUSTNESS ATTACKS - ON-OFF-PGD50 -----------------------
 # ADV attackers
-adv_attack_budgets = [0.02, 0.05, 0.1, 0.2, 0.3]
+adv_attack_budgets = [0.02, 0.05] # [0.02, 0.05, 0.1, 0.2, 0.3]
 
 robustness_adv_acc_results = [0 for _ in range(len(adv_attack_budgets))]
 robustness_adv_epoch_results = [-1 for _ in range(len(adv_attack_budgets))]
@@ -292,7 +292,7 @@ for budget in adv_attack_budgets:
                                    clip_max=cfg.image_attack.args.clip_max))
 
 # LADV attackers
-ladv_attack_budgets = [0.02, 0.05, 0.1, 0.2, 0.3]
+ladv_attack_budgets = [0.02, 0.05] #[0.02, 0.05, 0.1, 0.2, 0.3]
 
 robustness_ladv_acc_results = [0 for _ in range(len(ladv_attack_budgets))]
 robustness_ladv_epoch_results = [-1 for _ in range(len(ladv_attack_budgets))]
