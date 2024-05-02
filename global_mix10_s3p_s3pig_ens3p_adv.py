@@ -191,9 +191,9 @@ class BayesWrap(nn.Module):
                 new_parameters[i] = [new_parameters[i][l] + (driving_force[l] + repulsive_force[l]) for l in range(len(par1_params))]
                 
                 # Adding Langevin Noise
-                if cfg.add_langevin_noise:
+                if cfg.add_langevin_noise and (i!=j) and epoch>=1:
                     lr = optimizer.state_dict()['param_groups'][0]['lr']
-                    kij_sqrt_part = [torch.sqrt((2*kij.repeat(p.data.nelement()))/(len(all_pgs)*(float(epoch)))).to(device) for p in par1_params]
+                    kij_sqrt_part = [torch.sqrt((2*kij.repeat(p.data.nelement()))/(len(all_pgs)*(float(lr)))).to(device) for p in par1_params]
                     nj = [torch.distributions.Normal(0, 1).sample(kij_sqrt_part[l].shape).to(device) for l in range(len(par1_params))]
                     langevin_noise = [(kij_sqrt_part[l] * nj[l]).view(p.data.shape) for l, p in enumerate(par1_params)]
                     new_parameters[i] = [new_parameters[i][l] + langevin_noise[l] for l in range(len(par1_params))]
