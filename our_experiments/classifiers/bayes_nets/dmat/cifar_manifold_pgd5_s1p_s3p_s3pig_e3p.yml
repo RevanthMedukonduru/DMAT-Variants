@@ -1,0 +1,86 @@
+gpu_id: 0
+
+num_epochs: 40
+
+num_particles: 3
+
+run_robustness_tests: True # To test trained model with Various OM-PGD, PGD Attack budgets.
+
+seed: 0 # default seed, when different_seeds is False
+
+different_seeds:
+  state: True # [True, False] - True different
+  seeds: [0, 23, 42]
+
+classifier:
+  name: cifarP_classifier
+  pretrain: False # Need to be False for different init especially.
+  path: runs/classifiers/cifar_sgd_is/attacks/PREACTRES18/bayes_nets/SVGD3pH_Adamw/A0.001_p95/
+
+optimizer:
+  module: torch.optim
+  name: AdamW
+  args:
+    lr: 0.001
+
+scheduler:
+  type: None # cyclic - Not good, taking too much time to converge.
+  args:
+    lr_epochs: !!python/tuple [0,1,6,12,15,20]
+    lr_values: !!python/tuple [0,0.4,0.04,0.004,0.0004,0.0001]
+
+network:
+  name: PR18
+
+preprocessing: ["mean/std normalize", "flip/translation"]
+
+# SVGD/SVGDIG/ENS3P Configuration
+svgd:
+  state: True # [True, False] - True for SVGD, False for ENS
+  stop_pushing_after_this_epoch: 40 # Stop after this epoch [0, num_epochs].
+  weight_space: 
+    state: False
+    alpha: 0.001
+    p_update: 0.95 # Probability of Updating: [0.0, 1.0) - 0.0 for no update, 1.0 for pushing everytime.
+    add_langevin_noise: False # [True, False] - True for Langevin Noise, False for No Langevin Noise to be added when pushing.
+  func_space:
+    state: True
+    alpha: 0.001
+    p_update: 0.95 # Probability of Updating: [0.0, 1.0) - 0.0 for no update, 1.0 for pushing everytime.
+    add_langevin_noise: False # [True, False] - True for Langevin Noise, False for No Langevin Noise to be added when pushing.
+  is_ig: False # [True, False] - True for IG, False for SVGD
+  ig_lambda: 1.0 # Lambda/Combining/Regularising parameter for IG Loss.
+
+
+# DMAT Training Configuration - Adversarial Attack, Latent Adversarial Attack with PGD
+image_attack:
+  module: advertorch.attacks
+  name: PGDAttack
+  args:
+    eps: 0.0156862745 # 4/255 in [0, 1]
+    eps_iter: 0.0039215686 # 1/255 in [0, 1]
+    nb_iter: 5
+    clip_min: 0.0
+    clip_max: 1.0
+
+latent_attack:
+  module: advertorch.attacks
+  name: PGDAttack
+  args:
+    eps: 0.01
+    eps_iter: 0.0025
+    nb_iter: 5
+    clip_min: null
+    clip_max: null
+
+dataset:
+  name: cifar
+  num_classes: 10
+  train:
+    path: /home/revanth/on-off-manifold/stylegan2Ada_IS/dataset
+    batch_size: 128
+  test:
+    path: /home/revanth/on-off-manifold/stylegan2Ada_IS/dataset
+    batch_size: 256
+
+whats_this_experiment_about: "on-off-manifold/runs/classifiers/cifar_sgd_is/attacks/PREACTRES18/bayes_nets/SVGD/classifier_epoch_23.pt: RT SVGD"
