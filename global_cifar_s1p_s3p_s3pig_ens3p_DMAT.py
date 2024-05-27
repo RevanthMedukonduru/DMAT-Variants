@@ -52,7 +52,8 @@ class BayesWrap(nn.Module):
             else:
                 # same weights initialization - so we change linear layer weights.
                 self.particles.append(copy.deepcopy(NET))
-                self.particles[i].apply(init_weights)
+                if cfg.add_init_noise:
+                    self.particles[i].apply(init_weights)
 
         for i, particle in enumerate(self.particles):
             self.add_module(str(i), particle)
@@ -122,7 +123,7 @@ class BayesWrap(nn.Module):
         child_ladv_ce_loss = torch.stack(child_ladv_losses).mean(0)
         child_ladv_soft_out = torch.stack(child_ladv_soft_out).mean(0)
 
-        ce_loss = (0.5 * child_adv_ce_loss + 0.5 * child_ladv_ce_loss) # 0.5 * Adv CE Loss + 0.5 * LAdv CE Loss
+        ce_loss = (0.7 * child_adv_ce_loss + 0.3 * child_ladv_ce_loss) # 0.5 * Adv CE Loss + 0.5 * LAdv CE Loss
         
         if is_ig:
             child_clean_entropies = torch.stack(child_clean_entropies).mean(0)
@@ -304,7 +305,7 @@ class BayesWrap(nn.Module):
 # parse command line options
 parser = argparse.ArgumentParser(description="DMAT training")
 parser.add_argument("--config", default="experiments/classifiers/bayes_nets/dmat/cifar_manifold_pgd5_s1p_s3p_s3pig_e3p.yml")
-parser.add_argument("--resume", default="")
+parser.add_argument("--resume", default=None)
 args = parser.parse_args()
 
 cfg = load_config(args.config)
@@ -313,7 +314,7 @@ testset_cfg = cfg.dataset.test
 print(cfg)
 
 # Setup for Wandb
-wandb.init(project=f"{cfg.dataset.name}_CLASSIFIERS_{cfg.network.name}_BAYESNWs_DiffInit", config=cfg)
+wandb.init(project=f"{cfg.dataset.name}_CLASSIFIERS_{cfg.network.name}_BAYESNWs_DiffInit_10P_CE70off-30on", config=cfg)
 logging.info(cfg)
 
 output_dir = cfg.classifier.path
@@ -401,7 +402,7 @@ adv_attacker = get_attack(cfg.image_attack, net)
 test_adv_attacker = PGDAttack(predict=net,
                           eps=cfg.image_attack.args.eps,
                           eps_iter=cfg.image_attack.args.eps_iter,
-                          nb_iter=50,
+                          nb_iter=20,
                           clip_min=cfg.image_attack.args.clip_min,
                           clip_max=cfg.image_attack.args.clip_max)
 
@@ -581,7 +582,7 @@ def test_dmat(epoch):
 
 # ----------------------- TESTING WITH ADV - ROBUSTNESS ATTACKS -----------------------
 # ADV attackers
-adv_attack_budgets = [0.02, 0.05] #[0.02, 0.05, 0.1, 0.2, 0.3]
+adv_attack_budgets = [0.05] #[0.02, 0.05, 0.1, 0.2, 0.3] - Larep, #[0.015, 0.035, 0.055, 0.07, 0.1] - IGBnn
 
 robustness_adv_acc_results = [0 for _ in range(len(adv_attack_budgets))]
 robustness_adv_epoch_results = [-1 for _ in range(len(adv_attack_budgets))]
@@ -591,12 +592,12 @@ for budget in adv_attack_budgets:
     adv_attackers.append(PGDAttack(predict=net,
                                    eps=budget,
                                    eps_iter=budget/4.0,
-                                   nb_iter=50,
+                                   nb_iter=100,
                                    clip_min=cfg.image_attack.args.clip_min,
                                    clip_max=cfg.image_attack.args.clip_max))
 
 # LADV attackers
-ladv_attack_budgets = [0.02, 0.05] #[0.02, 0.05, 0.1, 0.2, 0.3]
+ladv_attack_budgets = [0.05] #[0.02, 0.05, 0.1, 0.2, 0.3]
 
 robustness_ladv_acc_results = [0 for _ in range(len(ladv_attack_budgets))]
 robustness_ladv_epoch_results = [-1 for _ in range(len(ladv_attack_budgets))]
@@ -606,7 +607,7 @@ for budget in ladv_attack_budgets:
     ladv_attackers.append(PGDAttack(predict=model,
                                     eps=budget,
                                     eps_iter=budget/4.0,
-                                    nb_iter=50,
+                                    nb_iter=40,
                                     clip_min=None,
                                     clip_max=None))    
 
@@ -633,7 +634,8 @@ def robustness_test(epoch):
         for i, test_attacker in enumerate(adv_attackers):
             with ctx_noparamgrad_and_eval(net):
                 images_adv = test_attacker.perturb(images, labels)
-                
+                images_adv = transforms.Normalize(CIFAR10_MEAN, CIFAR10_STD)(images_adv)
+        
                 # Forward pass
                 loss_adv, soft_out_adv = net.get_results_robustness_tests(images_adv, labels, criterion)
                 
@@ -651,7 +653,8 @@ def robustness_test(epoch):
             with ctx_noparamgrad_and_eval(model):
                 latents_adv = test_latent_attacker.perturb(latents, labels)
                 images_ladv = gan(latents_adv).detach()
-                
+                images_ladv = transforms.Normalize(CIFAR10_MEAN, CIFAR10_STD)(images_ladv)
+        
                 # Forward pass
                 loss_ladv, soft_out_ladv = net.get_results_robustness_tests(images_ladv, labels, criterion)
                 
@@ -682,28 +685,23 @@ def robustness_test(epoch):
 # ----------------------- ROBUSTNESS ATTACKS -----------------------
 
 # ----------------------- L2 Distance Between Particles -----------------------
+def calc_distance(weights0, weights1):
+    return sum((w0 - w1).pow(2).sum() for w0, w1 in zip(weights0, weights1)).sqrt()
+
 def calc_L2Dis_between_particles(epoch, wandb_log=True):
     ckpt = net.state_dict()
     
     # Assuming ckpt['state_dict'] is your checkpoint's state dictionary
-    weights0 = [v for k, v in ckpt.items() if k.startswith('0.')]
-    weights1 = [v for k, v in ckpt.items() if k.startswith('1.')]
-    weights2 = [v for k, v in ckpt.items() if k.startswith('2.')]
-
-    # Example for calculating L2 distance between weights (Weights - for each pair calculate L2 distance and sum them)
-    l2_distance = [0, 0, 0]
-    l2_distance[0] = sum((w0 - w1).pow(2).sum() for w0, w1 in zip(weights0, weights1)).sqrt()
-    l2_distance[1] = sum((w1 - w2).pow(2).sum() for w1, w2 in zip(weights1, weights2)).sqrt()
-    l2_distance[2] = sum((w2 - w0).pow(2).sum() for w2, w0 in zip(weights2, weights0)).sqrt()
-    
-    if wandb_log:
-        wandb.log({
-            "epoch": epoch,
-            "l2_distance_01": l2_distance[0],
-            "l2_distance_12": l2_distance[1],
-            "l2_distance_20": l2_distance[2]})
-    else:
-        print(f"Before training started: l2_distance_01: {l2_distance[0]}, l2_distance_12: {l2_distance[1]}, l2_distance_20: {l2_distance[2]}")
+    for i in range(cfg.num_particles):
+        weights_i = [v for k, v in ckpt.items() if k.startswith(f'{i}.')]
+        for j in range(cfg.num_particles):
+            if i!=j:
+                weights_j = [v for k, v in ckpt.items() if k.startswith(f'{j}.')]
+                l2_distance = calc_distance(weights_i, weights_j)
+                if wandb_log:
+                    wandb.log({f"epoch": epoch, f"l2_distance_{i}_{j}": l2_distance})
+                else:
+                    print(f"epoch: {epoch}, l2_distance_{i}_{j}: {l2_distance}")
 
 # ---------------------------- L2 DISTANCE ----------------------------
 
